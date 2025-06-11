@@ -187,9 +187,6 @@ Attempting partial detection causes more harm than good.
    - Local development only
    - May take longer to execute
 
-3. **All Tests** (`make test-all`)
-   - Complete test suite
-   - Includes both unit and integration tests
 
 ### Test Markers
 

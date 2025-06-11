@@ -89,9 +89,6 @@ make test
 
 # Run Claude CLI integration tests (requires Claude CLI)
 make test-cc
-
-# Run all tests including integration tests
-make test-all
 ```
 
 For complete development notes and technical documentation, see [CLAUDE.md](CLAUDE.md).

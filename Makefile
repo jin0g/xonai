@@ -1,14 +1,13 @@
-.PHONY: all test test-cc test-all lint install run clean
+.PHONY: all test test-cc lint install run clean
 
 all: lint test install
 
 test:
+	@echo "Running basic tests (no Claude CLI required)..."
 	python3 -m pytest tests/ -v
 
 test-cc:
-	python3 -m pytest tests/ -v -m claude_cli
-
-test-all:
+	@echo "Running tests with Claude CLI integration..."
 	python3 -m pytest tests/ -v -m ""
 
 lint:
