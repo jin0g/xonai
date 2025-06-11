@@ -79,9 +79,22 @@ To find large files, you can use the `find` command...
 - Claude CLI (automatically prompts for installation if missing)
 - xonsh shell (automatically installed with xoncc)
 
-## Development & Technical Details
+## Development & Testing
 
-For development notes, implementation details, and technical documentation, see [CLAUDE.md](CLAUDE.md).
+### Running Tests
+
+```bash
+# Run basic tests (no Claude CLI required)
+make test
+
+# Run Claude CLI integration tests (requires Claude CLI)
+make test-cc
+
+# Run all tests including integration tests
+make test-all
+```
+
+For complete development notes and technical documentation, see [CLAUDE.md](CLAUDE.md).
 
 ## Status & Roadmap
 

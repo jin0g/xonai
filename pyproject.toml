@@ -97,12 +97,18 @@ testpaths = ["tests"]
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
+markers = [
+    "claude_cli: tests that require Claude CLI to be installed and configured",
+    "integration: integration tests that may take longer to run",
+    "slow: slow running tests",
+]
 addopts = [
     "-ra",
     "--strict-markers",
     "--cov=xontrib",
     "--cov-report=term-missing",
     "--cov-report=html",
+    "-m not claude_cli",  # Skip Claude CLI tests by default
 ]
 
 [tool.coverage.run]

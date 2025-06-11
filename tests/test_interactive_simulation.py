@@ -4,6 +4,11 @@ Interactive test simulation for xoncc with delayed responses.
 This simulates Claude's streaming behavior.
 """
 
+import pytest
+
+# Mark tests that simulate actual Claude CLI behavior
+pytestmark = pytest.mark.integration
+
 import json
 import time
 from pathlib import Path

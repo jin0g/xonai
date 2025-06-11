@@ -171,6 +171,56 @@ Attempting partial detection causes more harm than good.
 4. Avoid complex pattern matching logic
 5. Keep xonsh's event system behavior in mind
 
+## Testing Strategy
+
+### Test Categories
+
+1. **Unit Tests** (`make test`)
+   - No external dependencies
+   - Mock Claude CLI interactions
+   - Run in CI/CD environment
+   - Fast execution
+
+2. **Integration Tests** (`make test-cc`)
+   - Require Claude CLI installation
+   - Test actual AI interactions
+   - Local development only
+   - May take longer to execute
+
+3. **All Tests** (`make test-all`)
+   - Complete test suite
+   - Includes both unit and integration tests
+
+### Test Markers
+
+- `@pytest.mark.claude_cli`: Tests requiring Claude CLI
+- `@pytest.mark.integration`: Integration tests (may be slow)
+- `@pytest.mark.slow`: Slow-running tests
+
+### CI/CD Testing
+
+GitHub Actions runs only unit tests without Claude CLI:
+```bash
+python -m pytest tests/test_setup_claude.py tests/test_formatters_*.py tests/test_xoncc_simple.py -v
+```
+
+### Local Testing with Claude CLI
+
+```bash
+# Test basic functionality
+make test
+
+# Test with actual Claude CLI (requires login)
+make test-cc
+
+# Run specific Claude CLI tests
+python -m pytest tests/test_claude_cli_integration.py -v
+
+# Run tests with specific markers
+python -m pytest -m "claude_cli" -v
+python -m pytest -m "not claude_cli" -v
+```
+
 ## Technical Details
 
 ### xonsh Event System

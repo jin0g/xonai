@@ -1,9 +1,15 @@
-.PHONY: all test lint install run clean
+.PHONY: all test test-cc test-all lint install run clean
 
 all: lint test install
 
 test:
 	python3 -m pytest tests/ -v
+
+test-cc:
+	python3 -m pytest tests/ -v -m claude_cli
+
+test-all:
+	python3 -m pytest tests/ -v -m ""
 
 lint:
 	python3 -m ruff check xontrib/ xoncc/ tests/ --fix
