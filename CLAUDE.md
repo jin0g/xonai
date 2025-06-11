@@ -71,7 +71,7 @@ python3 -m venv venv
 source venv/bin/activate
 
 # Install development dependencies
-pip install -r requirements-dev.txt
+pip install -e ".[dev]"
 
 # Install xoncc in development mode
 pip install -e .
