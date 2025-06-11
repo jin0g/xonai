@@ -75,7 +75,7 @@ To find large files, you can use the `find` command...
 
 ## Requirements
 
-- Python 3.8+
+- Python 3.9+
 - Claude CLI (automatically prompts for installation if missing)
 - xonsh shell (automatically installed with xoncc)
 
