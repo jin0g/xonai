@@ -70,9 +70,6 @@ def _load_xontrib_(xsh, **kwargs):
 
         traceback.print_exc()
 
-    # Add convenience functions to xonsh globals
-    xsh.ctx["cc"] = lambda query: call_claude_direct(query)
-    xsh.ctx["claude"] = lambda query: call_claude_direct(query)
 
     # Set up session management
     from xoncc.claude import cli

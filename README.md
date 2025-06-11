@@ -32,7 +32,6 @@ xoncc
 - [x] Natural language commands in xonsh shell
 - [x] Real-time AI responses with progress display
 - [x] Automatic Claude Code login handling
-- [x] Direct AI access with `cc('query')` and `claude('query')`
 
 ### 📋 Planned Features
 - [ ] Output capture with `$()` syntax
