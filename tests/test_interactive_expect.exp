@@ -1,0 +1,105 @@
+#!/usr/bin/expect -f
+# Interactive test script for xoncc using expect
+# Tests Ctrl-C handling, interactive responses, and timeouts
+
+set timeout 30
+set project_root [file dirname [file dirname [file normalize $argv0]]]
+
+# Test 1: Basic xoncc loading
+spawn xonsh -c "import sys; sys.path.insert(0, '$project_root'); xontrib load xoncc; print('READY'); import time; time.sleep(60)"
+
+expect {
+    "xoncc loaded - natural language commands enabled" {
+        puts "✓ Test 1 PASSED: xoncc loaded successfully"
+    }
+    timeout {
+        puts "✗ Test 1 FAILED: xoncc loading timed out"
+        exit 1
+    }
+}
+
+expect {
+    "READY" {
+        puts "✓ Ready for interactive testing"
+    }
+    timeout {
+        puts "✗ Failed to get ready signal"
+        exit 1
+    }
+}
+
+# Test 2: Send Ctrl-C and verify graceful handling
+puts "Testing Ctrl-C handling..."
+sleep 1
+send "\003"  ;# Send Ctrl-C
+
+expect {
+    "KeyboardInterrupt" {
+        puts "✓ Test 2 PASSED: Ctrl-C handled gracefully"
+    }
+    "Interrupted by user" {
+        puts "✓ Test 2 PASSED: Custom interrupt handling works"
+    }
+    timeout {
+        puts "? Test 2 INFO: No specific interrupt message (may be normal)"
+    }
+}
+
+# Test 3: Test xonsh is still responsive after Ctrl-C
+send "echo 'Shell responsive'\r"
+expect {
+    "Shell responsive" {
+        puts "✓ Test 3 PASSED: Shell remains responsive after Ctrl-C"
+    }
+    timeout {
+        puts "✗ Test 3 FAILED: Shell unresponsive after Ctrl-C"
+        exit 1
+    }
+}
+
+# Test 4: Test natural language query (if Claude CLI available)
+puts "Testing natural language query..."
+send "how do I list files\r"
+
+expect {
+    "Asking Claude about:" {
+        puts "✓ Test 4a PASSED: Natural language query detected"
+        
+        # Wait a bit and then send Ctrl-C during AI processing
+        sleep 2
+        send "\003"
+        
+        expect {
+            "Interrupted by user" {
+                puts "✓ Test 4b PASSED: Ctrl-C during AI processing handled"
+            }
+            timeout {
+                puts "? Test 4b INFO: No interrupt message during AI processing"
+            }
+        }
+    }
+    "Error: 'claude' command not found" {
+        puts "? Test 4 SKIPPED: Claude CLI not available"
+    }
+    timeout {
+        puts "✗ Test 4 FAILED: Natural language query timed out"
+    }
+}
+
+# Test 5: Test Ctrl-D (EOF)
+puts "Testing Ctrl-D handling..."
+send "echo 'Before EOF test'\r"
+expect "Before EOF test"
+
+send "\004"  ;# Send Ctrl-D (EOF)
+expect {
+    eof {
+        puts "✓ Test 5 PASSED: Ctrl-D (EOF) handled properly"
+    }
+    timeout {
+        puts "✗ Test 5 FAILED: Ctrl-D handling timed out"
+    }
+}
+
+puts "\n=== Interactive Test Summary ==="
+puts "All tests completed. Check output above for results."

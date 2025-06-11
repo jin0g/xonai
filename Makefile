@@ -1,18 +1,27 @@
-.PHONY: all test test-cc lint install run clean
+.PHONY: all test test-interactive lint install run clean
 
 all: lint test install
 
 test:
-	@echo "Running basic tests (no Claude CLI required)..."
+	@echo "Running all tests with dummy Claude CLI..."
 	python3 -m pytest tests/ -v
 
-test-cc:
-	@echo "Running tests with Claude CLI integration..."
-	python3 -m pytest tests/ -v -m ""
+test-interactive:
+	@echo "Running interactive tests with expect..."
+	@if command -v expect >/dev/null 2>&1; then \
+		echo "Running basic interactive test..."; \
+		./tests/test_interactive_expect.exp; \
+		echo "Running advanced Claude CLI interactive test..."; \
+		./tests/test_claude_cli_expect.exp; \
+	else \
+		echo "expect command not found. Install with: brew install expect (macOS) or apt-get install expect (Linux)"; \
+		exit 1; \
+	fi
 
 lint:
 	python3 -m ruff check xontrib/ xoncc/ tests/ --fix
 	python3 -m ruff format xontrib/ xoncc/ tests/
+	python3 -m mypy xontrib/ xoncc/ --ignore-missing-imports
 
 install:
 	pip3 install --user .

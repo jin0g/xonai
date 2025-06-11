@@ -108,7 +108,6 @@ addopts = [
     "--cov=xontrib",
     "--cov-report=term-missing",
     "--cov-report=html",
-    "-m not claude_cli",  # Skip Claude CLI tests by default
 ]
 
 [tool.coverage.run]

@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
-"""Integration tests that require Claude CLI to be installed and configured."""
+"""Integration tests with dummy Claude CLI for comprehensive testing."""
 
 import subprocess
 import pytest
 from unittest import mock
 
-pytestmark = pytest.mark.claude_cli
-
 
 class TestClaudeCLIIntegration:
-    """Tests that require actual Claude CLI integration."""
+    """Tests with dummy Claude CLI integration."""
 
-    def test_claude_cli_available(self):
+    def test_claude_cli_available(self, dummy_claude_env):
         """Test that Claude CLI is available in PATH."""
         try:
             result = subprocess.run(['which', 'claude'], capture_output=True, text=True)
@@ -19,24 +17,24 @@ class TestClaudeCLIIntegration:
         except FileNotFoundError:
             pytest.skip("'which' command not available")
 
-    def test_claude_cli_version(self):
+    def test_claude_cli_version(self, dummy_claude_env):
         """Test that Claude CLI responds to version check."""
         try:
             result = subprocess.run(['claude', '--version'], capture_output=True, text=True, timeout=5)
             assert result.returncode == 0, f"Claude CLI version check failed: {result.stderr}"
+            assert "dummy-claude" in result.stdout
         except subprocess.TimeoutExpired:
             pytest.fail("Claude CLI version check timed out")
         except FileNotFoundError:
             pytest.skip("Claude CLI not found")
 
-    def test_call_claude_direct_real(self):
+    def test_call_claude_direct_real(self, dummy_claude_env):
         """Test calling Claude directly with a simple query."""
         from xontrib.xoncc import call_claude_direct
         
-        # This will actually call Claude CLI
-        # Only run if user explicitly wants integration tests
+        # This will call dummy Claude CLI
         try:
-            call_claude_direct("Hello, this is a test. Please respond with 'Test successful'.")
+            call_claude_direct("test")
             # If we get here without exception, the test passed
             assert True
         except Exception as e:

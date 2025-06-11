@@ -8,6 +8,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
+from tests.setup_test_env import TestEnvironment
+
 # Add the parent directory to sys.path so we can import xontrib
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -86,3 +88,10 @@ def mock_subprocess(monkeypatch):
     monkeypatch.setattr("subprocess.Popen", mock_popen)
 
     return mock_popen
+
+
+@pytest.fixture
+def dummy_claude_env():
+    """Setup test environment with dummy Claude CLI."""
+    with TestEnvironment() as env:
+        yield env
