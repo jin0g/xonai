@@ -24,16 +24,10 @@ def call_claude_direct(query: str) -> None:
         if result.returncode != 0:
             # Claude CLI not found, show installation guide
             try:
-                from xoncc.setup_claude import get_user_language, open_claude_docs
+                from xoncc.check_claude import open_claude_docs
 
-                lang = get_user_language()
-                if lang == "ja":
-                    print("Claude CLIがインストールされていません。")
-                    print("インストールガイドを開いています...")
-                else:
-                    print("Claude CLI is not installed.")
-                    print("Opening installation guide...")
-
+                print("Claude CLI is not installed.")
+                print("Opening installation guide...")
                 open_claude_docs()
                 return
             except ImportError:

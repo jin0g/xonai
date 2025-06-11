@@ -4,6 +4,6 @@
 from setuptools import setup
 
 setup(
-    scripts=['scripts/xoncc'],
+    scripts=['xoncc/xoncc'],
 )
 
