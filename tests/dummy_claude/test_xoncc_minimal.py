@@ -11,7 +11,7 @@ class TestXonccMinimal:
     @mock.patch("subprocess.Popen")
     def test_call_claude_direct(self, mock_popen, mock_run):
         """Test calling Claude."""
-        from xontrib.xoncc import call_claude_direct
+        from xoncc.claude import call_claude_direct
 
         # Mock 'which claude' to succeed
         mock_run.return_value = mock.Mock(returncode=0)
@@ -34,11 +34,11 @@ class TestXonccMinimal:
     @mock.patch("subprocess.Popen")
     def test_session_resume(self, mock_popen, mock_run):
         """Test session resume functionality."""
-        import xontrib.xoncc
-        from xontrib.xoncc import call_claude_direct
+        import xoncc.claude.cli as cli
+        from xoncc.claude import call_claude_direct
 
         # Set a session ID
-        xontrib.xoncc.CC_SESSION_ID = "test-session-123"
+        cli.CC_SESSION_ID = "test-session-123"
 
         # Mock 'which claude' to succeed
         mock_run.return_value = mock.Mock(returncode=0)
@@ -76,7 +76,7 @@ class TestXonccMinimal:
 
     def test_xontrib_loading(self):
         """Test that xontrib can be loaded."""
-        from xontrib.xoncc import _load_xontrib_
+        from xoncc.xontrib import _load_xontrib_
 
         # Mock xonsh session
         mock_xsh = mock.MagicMock()
@@ -90,7 +90,8 @@ class TestXonccMinimal:
             # Load xontrib
             result = _load_xontrib_(mock_xsh)
 
-            # Should have attempted to patch SubprocSpec._run_binary 
-            # The mock setup means we can't verify the actual patching, but we can check the loading succeeded
+            # Should have attempted to patch SubprocSpec._run_binary
+            # The mock setup means we can't verify the actual patching,
+            # but we can check the loading succeeded
             # Event handler might or might not be called depending on fallback path
             assert result == {}

@@ -147,6 +147,7 @@ echo '{"type": "content_block_delta", "delta": {"text": "Use find . -name *.py"}
 
     # Run the test with PATH modified to use our mock
     import os
+
     env = os.environ.copy()
     env["PATH"] = f"/tmp:{env['PATH']}"
 
@@ -167,8 +168,6 @@ echo '{"type": "content_block_delta", "delta": {"text": "Use find . -name *.py"}
 
 
 if __name__ == "__main__":
-    import os
-
     # Run interactive simulation
     test_interactive_xoncc()
 

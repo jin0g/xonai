@@ -7,14 +7,22 @@ import sys
 
 def is_claude_ready():
     """Check if Claude CLI is installed and logged in.
-    
+
     Returns:
         tuple: (is_ready: bool, status: str)
         - status can be: "ready", "not_installed", "not_logged_in"
     """
+    # Check if we should use dummy Claude
+    import os
+
+    if os.environ.get("XONCC_DUMMY") == "1":
+        claude_cmd = "dummy_claude"
+    else:
+        claude_cmd = "claude"
+
     # Check if claude command exists
     try:
-        result = subprocess.run(["which", "claude"], capture_output=True, text=True)
+        result = subprocess.run(["which", claude_cmd], capture_output=True, text=True)
         if result.returncode != 0:
             return False, "not_installed"
     except Exception:
@@ -23,16 +31,16 @@ def is_claude_ready():
     # Check if logged in by running a simple command
     try:
         result = subprocess.run(
-            ["claude", "--print", "--output-format", "stream-json", "/exit"],
+            [claude_cmd, "--print", "--output-format", "stream-json", "/exit"],
             capture_output=True,
             text=True,
-            timeout=5
+            timeout=5,
         )
-        
+
         # Check for login-related errors in output
         if "Invalid API key" in result.stdout or "Invalid API key" in result.stderr:
             return False, "not_logged_in"
-        
+
         return True, "ready"
     except subprocess.TimeoutExpired:
         return True, "ready"  # Assume ready if it doesn't exit quickly
@@ -43,7 +51,7 @@ def is_claude_ready():
 def open_claude_docs():
     """Open Claude documentation in browser."""
     url = "https://docs.anthropic.com/en/docs/claude-code/getting-started"
-    
+
     if sys.platform == "darwin":  # macOS
         subprocess.run(["open", url])
     elif sys.platform.startswith("linux"):

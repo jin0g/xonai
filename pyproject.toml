@@ -34,10 +34,9 @@ dependencies = [
 
 [project.scripts]
 cc = "xoncc.cc:main"
-claude-realtime = "xoncc.realtime_json_formatter:main"
 
 [project.entry-points."xonsh.xontribs"]
-xoncc = "xontrib.xoncc"
+xoncc = "xoncc.xontrib"
 
 [project.urls]
 Homepage = "https://github.com/jin0g/xoncc"
@@ -55,11 +54,10 @@ dev = [
 ]
 
 [tool.setuptools]
-packages = ["xontrib", "xoncc"]
+packages = ["xoncc"]
 include-package-data = true
 
 [tool.setuptools.package-data]
-xontrib = ["*.py"]
 xoncc = ["*.py", "*.sh", "xoncc"]
 
 [tool.ruff]
@@ -79,7 +77,7 @@ select = [
 ignore = []
 
 [tool.ruff.lint.isort]
-known-first-party = ["xontrib"]
+known-first-party = ["xoncc"]
 
 [tool.black]
 line-length = 100
@@ -105,14 +103,14 @@ markers = [
 addopts = [
     "-ra",
     "--strict-markers",
-    "--cov=xontrib",
+    "--cov=xoncc",
     "--cov-report=term-missing",
     "--cov-report=html",
 ]
 
 [tool.coverage.run]
 branch = true
-source = ["xontrib"]
+source = ["xoncc"]
 
 [tool.coverage.report]
 exclude_lines = [

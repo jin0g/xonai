@@ -35,7 +35,14 @@ cleanup() {
 trap cleanup EXIT
 
 # Run claude and pipe directly to Python formatter while capturing output
-echo "$INPUT" | $CLAUDE_CMD 2>/dev/null | tee "$SESSION_FILE" | python3 -m xoncc.realtime_json_formatter
+echo "$INPUT" | $CLAUDE_CMD 2>/dev/null | tee "$SESSION_FILE" | python3 -c "
+import sys
+from xoncc.formatters.realtime import RealtimeClaudeFormatter
+formatter = RealtimeClaudeFormatter()
+for line in sys.stdin:
+    formatter.process_json_line(line.strip())
+formatter.finalize_output()
+"
 
 # Extract session ID from captured output
 SESSION_ID=$(grep -o '"session_id":"[^"]*"' "$SESSION_FILE" 2>/dev/null | head -1 | cut -d'"' -f4)

@@ -113,6 +113,9 @@ ENV/
 env.bak/
 venv.bak/
 
+# Virtual environment (never commit)
+/venv/
+
 # Spyder project settings
 .spyderproject
 .spyproject

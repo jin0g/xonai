@@ -12,7 +12,7 @@ class TestXonccSimple:
     @mock.patch("subprocess.Popen")
     def test_call_claude(self, mock_popen, mock_run):
         """Test calling Claude."""
-        from xontrib.xoncc import call_claude_direct
+        from xoncc.claude import call_claude_direct
 
         # Mock 'which claude' to succeed
         mock_run.return_value = mock.Mock(returncode=0)
@@ -49,7 +49,7 @@ class TestXonccSimple:
     def test_session_resume(self, mock_popen, mock_run):
         """Test session resume functionality."""
         import xontrib.xoncc
-        from xontrib.xoncc import call_claude_direct
+        from xoncc.claude import call_claude_direct
 
         # Mock 'which claude' to succeed
         mock_run.return_value = mock.Mock(returncode=0)
@@ -152,7 +152,7 @@ class TestXonccIntegration:
 
     def test_xontrib_loading(self):
         """Test that xontrib can be loaded."""
-        from xontrib.xoncc import _load_xontrib_
+        from xoncc.xontrib import _load_xontrib_
 
         # Mock xonsh session
         mock_xsh = mock.MagicMock()

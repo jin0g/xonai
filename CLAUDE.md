@@ -59,9 +59,48 @@ To find large files, you can use the `find` command...
 
 ## Development & Testing
 
+### Setting Up Development Environment
+
+**IMPORTANT**: Always use a virtual environment for development:
+
+```bash
+# Create virtual environment
+python3 -m venv venv
+
+# Activate virtual environment
+source venv/bin/activate
+
+# Install development dependencies
+pip install -r requirements-dev.txt
+
+# Install xoncc in development mode
+pip install -e .
+```
+
+### Git Best Practices
+
+**CRITICAL**: Never commit the virtual environment or use `git add .` / `git add -A`:
+
+```bash
+# ✅ GOOD: Add specific files
+git add file1.py file2.py
+
+# ✅ GOOD: Add only tracked files
+git add -u
+
+# ❌ BAD: Never use these
+git add .
+git add -A
+```
+
+The `venv/` directory is included in `.gitignore` and must NEVER be committed to the repository.
+
 ### Running Tests
 
 ```bash
+# Activate virtual environment first
+source venv/bin/activate
+
 # Run all tests (includes interactive tests if expect is available)
 make test
 
@@ -82,6 +121,15 @@ make clean
 - `tests/interactive/` - Interactive shell tests (requires expect)
 - `tests/dummy_claude/` - Tests using mock Claude CLI
 
+### Dummy Claude Environment
+
+For testing without real Claude CLI, set the environment variable:
+```bash
+export XONCC_DUMMY=1
+```
+
+This will use `dummy_claude` command instead of `claude`.
+
 ## Architecture Overview
 
 xoncc integrates Claude AI into xonsh shell by catching command-not-found errors and passing them to Claude for interpretation.
@@ -92,8 +140,8 @@ xoncc integrates Claude AI into xonsh shell by catching command-not-found errors
    - Simple bash script that launches xonsh with xoncc xontrib loaded
    - Uses `exec xonsh` to properly handle signals (especially Ctrl-C)
 
-2. **xontrib** (`xontrib/xoncc.py`)
-   - Registers `on_command_not_found` event handler
+2. **xontrib** (`xoncc/xontrib.py`)
+   - Overrides `SubprocSpec._run_binary` to intercept command execution
    - Calls Claude CLI directly with auto-login handling
    - Uses `claude --print --output-format stream-json` for real-time output
 

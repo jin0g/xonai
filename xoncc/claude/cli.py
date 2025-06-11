@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
-"""
-xoncc - Minimal Claude Code integration for xonsh
-
-Simply catches command-not-found errors and asks Claude for help.
-"""
+"""Claude CLI integration functions."""
 
 import json
 import os
 import subprocess
-from typing import Any, Dict, List, Optional
+from typing import Optional
 
 # Global session ID for resume functionality
 CC_SESSION_ID: Optional[str] = None
@@ -18,13 +14,19 @@ def call_claude_direct(query: str) -> None:
     """Call Claude directly with auto-login handling."""
     global CC_SESSION_ID
 
+    # Check if we should use dummy Claude
+    if os.environ.get("XONCC_DUMMY") == "1":
+        claude_cmd = "dummy_claude"
+    else:
+        claude_cmd = "claude"
+
     # Check if Claude CLI is installed
     try:
-        result = subprocess.run(["which", "claude"], capture_output=True, text=True)
+        result = subprocess.run(["which", claude_cmd], capture_output=True, text=True)
         if result.returncode != 0:
             # Claude CLI not found, show installation guide
             try:
-                from xoncc.check_claude import open_claude_docs
+                from .check import open_claude_docs
 
                 print("Claude CLI is not installed.")
                 print("Opening installation guide...")
@@ -38,8 +40,8 @@ def call_claude_direct(query: str) -> None:
         return
 
     try:
-        # Build command with streaming JSON output  
-        cmd = ["claude", "--print", "--verbose", "--output-format", "stream-json", query]
+        # Build command with streaming JSON output
+        cmd = [claude_cmd, "--print", "--verbose", "--output-format", "stream-json", query]
 
         # Add session ID if available
         env = os.environ.copy()
@@ -107,7 +109,7 @@ def call_claude_direct(query: str) -> None:
 
             # Run claude /exit to trigger login and immediately exit
             login_proc = subprocess.Popen(
-                ["claude", "/exit"],
+                [claude_cmd, "/exit"],
                 env=env,
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
@@ -156,96 +158,3 @@ def call_claude_direct(query: str) -> None:
         print("Error: 'claude' command not found. Please install Claude CLI.")
     except Exception as e:
         print(f"Error calling Claude: {e}")
-
-
-def handle_command_not_found(cmd: List[str], **kwargs) -> Optional[bool]:
-    """Handle command not found events."""
-    # Skip if it's trying to run claude itself (avoid recursion)
-    if cmd and len(cmd) > 0 and cmd[0] == "claude":
-        # Return None to let xonsh handle it normally
-        return None
-
-    # Join command parts
-    command_str = " ".join(cmd) if isinstance(cmd, list) else str(cmd)
-
-    # Skip common typos and shell-like commands
-    prefixes = ["ls", "cd", "pwd", "git", "python", "pip"]
-    if any(command_str.startswith(prefix) for prefix in prefixes):
-        return None
-
-    # Call Claude silently
-    call_claude_direct(command_str)
-
-    # Return True to suppress the default error
-    return True
-
-
-def _load_xontrib_(xsh, **kwargs):
-    """Load the xontrib."""
-    # Check if already loaded to prevent duplicates
-    if hasattr(xsh.ctx, '_xoncc_loaded'):
-        return {}
-    
-    # Mark as loaded
-    xsh.ctx['_xoncc_loaded'] = True
-    
-    # Also add to builtins to prevent loading via other paths
-    if not hasattr(xsh.builtins, '_xoncc_loaded'):
-        xsh.builtins._xoncc_loaded = True
-    
-    # Override xonsh functions to intercept command execution
-    try:
-        from xonsh.procs.specs import SubprocSpec
-        import xonsh.tools as xt
-        
-        # Store original method
-        if not hasattr(SubprocSpec, '_xoncc_original_run_binary'):
-            SubprocSpec._xoncc_original_run_binary = SubprocSpec._run_binary
-        
-        def xoncc_run_binary(self, kwargs):
-            """xoncc override for _run_binary."""
-            try:
-                return SubprocSpec._xoncc_original_run_binary(self, kwargs)
-            except xt.XonshError as ex:
-                if "command not found" in str(ex):
-                    # Extract command name from error
-                    import re
-                    match = re.search(r"command not found: '([^']+)'", str(ex))
-                    if match:
-                        cmd_name = match.group(1)
-                        
-                        # Skip common commands (let them show normal errors)
-                        skip_prefixes = ["ls", "cd", "pwd", "git", "python", "pip", "claude"]
-                        if any(cmd_name.startswith(prefix) for prefix in skip_prefixes):
-                            raise ex
-                        
-                        # This is a natural language query - call Claude silently
-                        call_claude_direct(cmd_name)
-                        
-                        # Return successful dummy process
-                        import subprocess
-                        return subprocess.Popen(['true'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                
-                # Re-raise all other errors
-                raise ex
-        
-        # Apply the override
-        SubprocSpec._run_binary = xoncc_run_binary
-        
-    except Exception as e:
-        print(f"⚠️  Could not override _run_binary: {e}")
-        import traceback
-        traceback.print_exc()
-
-    # Add convenience functions to xonsh globals
-    xsh.ctx["cc"] = lambda query: call_claude_direct(query)
-    xsh.ctx["claude"] = lambda query: call_claude_direct(query)
-
-    # Set up session management
-    global CC_SESSION_ID
-    if "CC_SESSION_ID" in xsh.env:
-        CC_SESSION_ID = xsh.env["CC_SESSION_ID"]
-
-    # Silent loading - no welcome message
-
-    return {}

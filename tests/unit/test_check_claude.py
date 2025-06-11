@@ -3,7 +3,7 @@
 
 from unittest import mock
 
-from xoncc.check_claude import is_claude_ready, open_claude_docs
+from xoncc.claude import is_claude_ready, open_claude_docs
 
 
 class TestClaudeCheck:
@@ -40,9 +40,7 @@ class TestClaudeCheck:
         # Second call: 'claude --print /exit' has auth error
         mock_run.side_effect = [
             mock.Mock(returncode=0),  # which claude
-            mock.Mock(
-                returncode=1, stdout="Invalid API key", stderr=""
-            ),  # claude command
+            mock.Mock(returncode=1, stdout="Invalid API key", stderr=""),  # claude command
         ]
 
         ready, status = is_claude_ready()

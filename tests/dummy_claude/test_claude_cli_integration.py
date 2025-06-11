@@ -33,7 +33,7 @@ class TestClaudeCLIIntegration:
 
     def test_call_claude_direct_real(self, dummy_claude_env):
         """Test calling Claude directly with a simple query."""
-        from xontrib.xoncc import call_claude_direct
+        from xoncc.claude import call_claude_direct
 
         # This will call dummy Claude CLI
         try:
@@ -46,7 +46,7 @@ class TestClaudeCLIIntegration:
     @mock.patch("subprocess.run")
     def test_auto_login_flow(self, mock_run):
         """Test the auto-login flow detection."""
-        from xontrib.xoncc import call_claude_direct
+        from xoncc.claude import call_claude_direct
 
         # Mock 'which claude' to succeed
         mock_run.return_value = mock.Mock(returncode=0)
@@ -93,7 +93,7 @@ class TestClaudeCLIRealWorld:
         import io
         from unittest.mock import patch
 
-        from xontrib.xoncc import call_claude_direct
+        from xoncc.claude import call_claude_direct
 
         captured_output = io.StringIO()
         with patch("sys.stdout", captured_output):
@@ -121,7 +121,7 @@ class TestClaudeCLIRealWorld:
     def test_session_continuity(self, mock_run):
         """Test that session ID is properly passed."""
         import xontrib.xoncc
-        from xontrib.xoncc import call_claude_direct
+        from xoncc.claude import call_claude_direct
 
         # Mock 'which claude' to succeed
         mock_run.return_value = mock.Mock(returncode=0)

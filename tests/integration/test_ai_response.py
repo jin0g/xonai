@@ -2,9 +2,8 @@
 """Test AI response functionality with real Claude CLI."""
 
 import subprocess
-import tempfile
+
 import pytest
-import time
 
 
 class TestAIResponse:
@@ -37,8 +36,8 @@ import sys
 sys.path.insert(0, '/Users/akira/xoncc')
 
 # Import and load xoncc directly
-import xontrib.xoncc
-xontrib.xoncc._load_xontrib_(__xonsh__)
+import xoncc.xontrib
+xoncc.xontrib._load_xontrib_(__xonsh__)
 
 # Test AI query - should not show "command not found"
 try:
@@ -67,8 +66,8 @@ import sys
 sys.path.insert(0, '/Users/akira/xoncc')
 
 # Import and load xoncc directly
-import xontrib.xoncc
-xontrib.xoncc._load_xontrib_(__xonsh__)
+import xoncc.xontrib
+xoncc.xontrib._load_xontrib_(__xonsh__)
 
 # Mock subprocess.Popen to avoid calling real Claude
 import subprocess
@@ -111,8 +110,8 @@ import sys
 sys.path.insert(0, '/Users/akira/xoncc')
 
 # Import and load xoncc directly
-import xontrib.xoncc
-xontrib.xoncc._load_xontrib_(__xonsh__)
+import xoncc.xontrib
+xoncc.xontrib._load_xontrib_(__xonsh__)
 
 # Test normal commands still work
 result = $(echo "hello")
@@ -134,7 +133,9 @@ except subprocess.CalledProcessError:
         assert result.returncode == 0
         assert "PASS: Normal errors still work" in result.stdout
 
-    @pytest.mark.skipif("not hasattr(subprocess, 'run')")  # Skip if testing environment lacks subprocess
+    @pytest.mark.skipif(
+        "not hasattr(subprocess, 'run')"
+    )  # Skip if testing environment lacks subprocess
     def test_real_claude_integration(self, tmp_path):
         """Test integration with real Claude CLI if available."""
         # Check if real Claude CLI is available
@@ -153,8 +154,8 @@ import sys
 sys.path.insert(0, '/Users/akira/xoncc')
 
 # Import and load xoncc directly
-import xontrib.xoncc
-xontrib.xoncc._load_xontrib_(__xonsh__)
+import xoncc.xontrib
+xoncc.xontrib._load_xontrib_(__xonsh__)
 
 # Test simple query
 try:

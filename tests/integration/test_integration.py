@@ -27,8 +27,8 @@ import sys
 sys.path.insert(0, '/Users/akira/xoncc')
 
 # Import and load xoncc directly
-import xontrib.xoncc
-xontrib.xoncc._load_xontrib_(__xonsh__)
+import xoncc.xontrib
+xoncc.xontrib._load_xontrib_(__xonsh__)
 
 # Mock subprocess.Popen to prevent actual Claude calls
 import subprocess
@@ -40,7 +40,7 @@ def mock_popen(*args, **kwargs):
                 self.stdout = iter(['{"type": "tokens", "count": 1}'])
                 self.stderr = iter([''])
                 self.returncode = 0
-            def wait(self): 
+            def wait(self):
                 return 0
         return MockProcess()
     return original_popen(*args, **kwargs)
@@ -85,8 +85,8 @@ import sys
 sys.path.insert(0, '/Users/akira/xoncc')
 
 # Import and load xoncc directly
-import xontrib.xoncc
-xontrib.xoncc._load_xontrib_(__xonsh__)
+import xoncc.xontrib
+xoncc.xontrib._load_xontrib_(__xonsh__)
 
 # Check that override is in place
 from xonsh.procs.specs import SubprocSpec
@@ -151,8 +151,8 @@ import sys
 sys.path.insert(0, '/Users/akira/xoncc')
 
 # Import and load xoncc directly
-import xontrib.xoncc
-xontrib.xoncc._load_xontrib_(__xonsh__)
+import xoncc.xontrib
+xoncc.xontrib._load_xontrib_(__xonsh__)
 
 # Time the execution
 start = time.time()
@@ -191,8 +191,8 @@ import sys
 sys.path.insert(0, '/Users/akira/xoncc')
 
 # Import and load xoncc directly
-import xontrib.xoncc
-xontrib.xoncc._load_xontrib_(__xonsh__)
+import xoncc.xontrib
+xoncc.xontrib._load_xontrib_(__xonsh__)
 
 # Test various normal commands
 import subprocess
@@ -264,12 +264,12 @@ import sys
 sys.path.insert(0, '/Users/akira/xoncc')
 
 # Import and load xoncc directly
-import xontrib.xoncc
-xontrib.xoncc._load_xontrib_(__xonsh__)
+import xoncc.xontrib
+xoncc.xontrib._load_xontrib_(__xonsh__)
 
 # Test query in {language} using subprocess syntax
 try:
-    $({query.replace(' ', '_')}_command_that_does_not_exist)
+    $({query.replace(" ", "_")}_command_that_does_not_exist)
 except Exception:
     pass  # Expected - handled by xoncc
 

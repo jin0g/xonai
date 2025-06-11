@@ -9,6 +9,16 @@ import importlib.util
 __version__ = "0.0.1"
 __author__ = "xoncc contributors"
 
+# Import main functions if in xonsh
+try:
+    from .claude import is_claude_ready, open_claude_docs
+except ImportError:
+    # Not in proper environment, skip imports
+    is_claude_ready = None
+    open_claude_docs = None
+
+__all__ = ["__version__", "is_claude_ready", "open_claude_docs"]
+
 # Check if we're running in xonsh
 HAS_XONSH = importlib.util.find_spec("xonsh") is not None
 
