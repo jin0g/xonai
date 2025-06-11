@@ -12,43 +12,43 @@ from pathlib import Path
 
 class TestEnvironment:
     """Context manager for test environment with dummy Claude CLI."""
-    
+
     def __init__(self):
         self.temp_dir = None
         self.original_path = None
         self.dummy_claude_path = None
-        
+
     def __enter__(self):
         # Create temporary directory
         self.temp_dir = tempfile.mkdtemp(prefix="xoncc_test_")
         self.dummy_claude_path = Path(self.temp_dir) / "claude"
-        
+
         # Copy dummy claude script
         test_dir = Path(__file__).parent
         dummy_claude_source = test_dir / "dummy_claude.py"
-        
+
         # Create executable claude script
         with open(self.dummy_claude_path, "w") as f:
-            f.write(f"#!/bin/bash\npython3 {dummy_claude_source} \"$@\"\n")
-        
+            f.write(f'#!/bin/bash\npython3 {dummy_claude_source} "$@"\n')
+
         os.chmod(self.dummy_claude_path, 0o755)
-        
+
         # Modify PATH to include our dummy claude
         self.original_path = os.environ.get("PATH", "")
         os.environ["PATH"] = f"{self.temp_dir}:{self.original_path}"
-        
+
         print(f"Test environment setup: dummy claude at {self.dummy_claude_path}")
         return self
-        
+
     def __exit__(self, exc_type, exc_val, exc_tb):
         # Restore original PATH
         if self.original_path is not None:
             os.environ["PATH"] = self.original_path
-            
+
         # Clean up temporary directory
         if self.temp_dir and os.path.exists(self.temp_dir):
             shutil.rmtree(self.temp_dir)
-            
+
         print("Test environment cleaned up")
 
 

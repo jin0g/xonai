@@ -13,16 +13,9 @@ __author__ = "xoncc contributors"
 HAS_XONSH = importlib.util.find_spec("xonsh") is not None
 
 if HAS_XONSH:
-    # We're in xonsh, load the xontrib automatically
-    import sys
-
-    if hasattr(sys, "__xonsh__"):
-        # Use xonsh's built-in xontrib loading
-        import builtins
-
-        xonsh = getattr(builtins, "__xonsh__", None)
-        if xonsh:
-            xonsh.execer.exec("""xontrib load xoncc""", glbs=xonsh.ctx)
+    # Don't auto-load here to avoid conflicts with script loading
+    # The xoncc script will handle loading the xontrib
+    pass
 else:
     # Not in xonsh, provide a helpful message
     def _not_in_xonsh():

@@ -4,14 +4,14 @@ Interactive test simulation for xoncc with delayed responses.
 This simulates Claude's streaming behavior.
 """
 
+import json
+import time
+from pathlib import Path
+
 import pytest
 
 # Mark tests that simulate actual Claude CLI behavior
 pytestmark = pytest.mark.integration
-
-import json
-import time
-from pathlib import Path
 
 
 def simulate_claude_streaming_response(query):
@@ -146,6 +146,7 @@ echo '{"type": "content_block_delta", "delta": {"text": "Use find . -name *.py"}
     mock_claude.chmod(0o755)
 
     # Run the test with PATH modified to use our mock
+    import os
     env = os.environ.copy()
     env["PATH"] = f"/tmp:{env['PATH']}"
 

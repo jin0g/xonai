@@ -21,7 +21,8 @@ test-interactive:
 lint:
 	python3 -m ruff check xontrib/ xoncc/ tests/ --fix
 	python3 -m ruff format xontrib/ xoncc/ tests/
-	python3 -m mypy xontrib/ xoncc/ --ignore-missing-imports
+	python3 -m mypy xontrib/ --ignore-missing-imports
+	python3 -m mypy xoncc/ --ignore-missing-imports --exclude 'xontrib.*'
 
 install:
 	pip3 install --user .

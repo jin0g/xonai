@@ -1,0 +1,1 @@
+"""Interactive tests for xoncc (manual and automated)."""

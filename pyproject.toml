@@ -28,7 +28,8 @@ classifiers = [
 ]
 requires-python = ">=3.9"
 dependencies = [
-    "xonsh>=0.13.0"
+    "xonsh>=0.13.0",
+    "gnureadline>=8.1.2; sys_platform == 'darwin'"
 ]
 
 [project.scripts]
