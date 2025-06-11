@@ -1,0 +1,3 @@
+# Enable GitHub syntax highlighting for xonsh files
+*.xsh linguist-language=Python
+*.xonshrc linguist-language=Python

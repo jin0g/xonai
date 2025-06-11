@@ -1,0 +1,126 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "xoncc"
+version = "0.0.1"
+description = "Claude Code Wrapper for xonsh - Seamlessly integrate Claude Code into your xonsh shell"
+readme = "README.md"
+# No license
+authors = [
+    {name = "Akira", email = "xoncc@example.com"},
+]
+keywords = ["xonsh", "xontrib", "claude", "ai", "shell"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: System :: Shells",
+    "Topic :: System :: System Shells",
+    "Topic :: Utilities",
+]
+requires-python = ">=3.9"
+dependencies = [
+    "xonsh>=0.13.0"
+]
+
+[project.scripts]
+cc = "xoncc.cc:main"
+claude-realtime = "xoncc.realtime_json_formatter:main"
+# xoncc is provided as a shell script via setup.py
+
+[project.entry-points."xonsh.xontribs"]
+xoncc = "xontrib.xoncc"
+
+[project.urls]
+Homepage = "https://github.com/akira/xoncc"
+Documentation = "https://github.com/akira/xoncc#readme"
+Repository = "https://github.com/akira/xoncc"
+Issues = "https://github.com/akira/xoncc/issues"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=3.0",
+    "ruff>=0.1.0",
+    "black>=23.0",
+    "mypy>=1.0",
+]
+
+[tool.setuptools]
+packages = ["xontrib", "xoncc"]
+include-package-data = true
+
+[tool.setuptools.package-data]
+xontrib = ["*.py"]
+xoncc = ["*.py", "*.sh"]
+
+[tool.ruff]
+target-version = "py38"
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "UP", # pyupgrade
+]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["xontrib"]
+
+[tool.black]
+line-length = 100
+target-version = ["py38"]
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "claude_cli: tests that require Claude CLI to be installed and configured",
+    "integration: integration tests that may take longer to run",
+    "slow: slow running tests",
+]
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--cov=xontrib",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "-m not claude_cli",  # Skip Claude CLI tests by default
+]
+
+[tool.coverage.run]
+branch = true
+source = ["xontrib"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if __name__ == .__main__.:",
+    "raise AssertionError",
+    "raise NotImplementedError",
+]

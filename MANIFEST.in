@@ -1,0 +1,6 @@
+include README.md
+include LICENSE
+recursive-include xontrib *.py
+recursive-include xoncc *.py
+include xoncc/cc.sh
+include scripts/xoncc
