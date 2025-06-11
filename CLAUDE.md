@@ -1,6 +1,86 @@
 # xoncc Development Notes
 
-This document contains important development notes and implementation details for xoncc.
+This document contains important development notes, implementation details, and usage documentation for xoncc.
+
+## Overview
+
+xoncc is a simple xonsh extension that catches "command not found" errors and automatically asks Claude AI for help. No special commands needed - just type naturally in any language.
+
+## Usage Guide
+
+### Installation Methods
+
+1. **Launch with xoncc command (Recommended)**
+   ```bash
+   xoncc
+   ```
+
+2. **Load as xontrib in existing xonsh session**
+   ```bash
+   xonsh
+   >>> xontrib load xoncc
+   ```
+
+3. **Auto-load in .xonshrc**
+   Add to your `~/.xonshrc`:
+   ```python
+   xontrib load xoncc
+   ```
+
+### Examples
+
+```bash
+# Ask questions naturally in English
+>>> how do I find large files
+To find large files, you can use the `find` command...
+
+# Japanese queries work too
+>>> 大きなファイルを探す方法
+大きなファイルを探すには、`find`コマンドを使用します...
+
+# Regular commands work normally
+>>> ls
+>>> print("Hello World")
+```
+
+## Features
+
+- **Zero configuration**: Works immediately after installation
+- **Multi-language support**: Ask questions in English, Japanese, or any language
+- **Session continuity**: Conversations are maintained within a session
+- **Transparent operation**: No special syntax or commands to remember
+- **Safe**: Only activates for non-existent commands
+
+## Important Notes
+
+- **xonsh shell only**: This package is designed specifically as a xonsh extension. Python import usage is not supported.
+- **Claude Code required**: You need Claude Code installed and accessible in your PATH.
+- **Auto-login**: Login to Claude will be handled automatically when needed.
+
+## Development & Testing
+
+### Running Tests
+
+```bash
+# Run all tests (includes interactive tests if expect is available)
+make test
+
+# Run lint
+make lint
+
+# Install locally
+make install
+
+# Clean build artifacts
+make clean
+```
+
+### Test Structure
+
+- `tests/unit/` - Unit tests for individual components
+- `tests/integration/` - Integration tests
+- `tests/interactive/` - Interactive shell tests (requires expect)
+- `tests/dummy_claude/` - Tests using mock Claude CLI
 
 ## Architecture Overview
 
@@ -8,7 +88,7 @@ xoncc integrates Claude AI into xonsh shell by catching command-not-found errors
 
 ### Key Components
 
-1. **xoncc shell script** (`scripts/xoncc`)
+1. **xoncc shell script** (`xoncc/xoncc`)
    - Simple bash script that launches xonsh with xoncc xontrib loaded
    - Uses `exec xonsh` to properly handle signals (especially Ctrl-C)
 

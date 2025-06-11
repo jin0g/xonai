@@ -35,16 +35,15 @@ dependencies = [
 [project.scripts]
 cc = "xoncc.cc:main"
 claude-realtime = "xoncc.realtime_json_formatter:main"
-# xoncc is provided as a shell script via setup.py
 
 [project.entry-points."xonsh.xontribs"]
 xoncc = "xontrib.xoncc"
 
 [project.urls]
-Homepage = "https://github.com/akira/xoncc"
-Documentation = "https://github.com/akira/xoncc#readme"
-Repository = "https://github.com/akira/xoncc"
-Issues = "https://github.com/akira/xoncc/issues"
+Homepage = "https://github.com/jin0g/xoncc"
+Documentation = "https://github.com/jin0g/xoncc#readme"
+Repository = "https://github.com/jin0g/xoncc"
+Issues = "https://github.com/jin0g/xoncc/issues"
 
 [project.optional-dependencies]
 dev = [
@@ -61,7 +60,7 @@ include-package-data = true
 
 [tool.setuptools.package-data]
 xontrib = ["*.py"]
-xoncc = ["*.py", "*.sh"]
+xoncc = ["*.py", "*.sh", "xoncc"]
 
 [tool.ruff]
 target-version = "py38"

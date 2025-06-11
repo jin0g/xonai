@@ -1,21 +1,20 @@
-.PHONY: all test test-interactive lint install run clean
+.PHONY: all test lint install run clean
 
 all: lint test install
 
 test:
-	@echo "Running all tests with dummy Claude CLI..."
+	@echo "Running all tests..."
 	python3 -m pytest tests/ -v
-
-test-interactive:
+	@echo ""
 	@echo "Running interactive tests with expect..."
 	@if command -v expect >/dev/null 2>&1; then \
 		echo "Running basic interactive test..."; \
-		./tests/test_interactive_expect.exp; \
+		./tests/interactive/test_interactive_expect.exp; \
 		echo "Running advanced Claude CLI interactive test..."; \
-		./tests/test_claude_cli_expect.exp; \
+		./tests/interactive/test_claude_cli_expect.exp; \
 	else \
-		echo "expect command not found. Install with: brew install expect (macOS) or apt-get install expect (Linux)"; \
-		exit 1; \
+		echo "expect command not found. Skipping interactive tests."; \
+		echo "To run interactive tests, install expect with: brew install expect (macOS) or apt-get install expect (Linux)"; \
 	fi
 
 lint:
