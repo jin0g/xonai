@@ -1,10 +1,9 @@
-.PHONY: all test test-fast test-claude lint install run clean
+.PHONY: all test lint install run clean
 
 all: lint test install
 
-# Run all tests with coverage (pyproject.toml settings)
 test:
-	@echo "Running all tests (using pyproject.toml configuration)..."
+	@echo "Running all tests..."
 	python3 -m pytest
 	@echo ""
 	@echo "Running interactive tests with expect..."
@@ -17,16 +16,6 @@ test:
 		echo "expect command not found. Skipping interactive tests."; \
 		echo "To run interactive tests, install expect with: brew install expect (macOS) or apt-get install expect (Linux)"; \
 	fi
-
-# Run tests without coverage (faster)
-test-fast:
-	@echo "Running tests without coverage..."
-	python3 -m pytest --no-cov -v
-
-# Run only Claude CLI integration tests
-test-claude:
-	@echo "Running Claude CLI integration tests..."
-	python3 -m pytest -m claude_cli -v
 
 lint:
 	python3 -m ruff check xoncc/ tests/ --fix
