@@ -1,1 +1,1 @@
-"""Unit tests for xoncc components."""
+"""Unit tests for xonai components."""

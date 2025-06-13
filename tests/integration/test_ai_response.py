@@ -33,17 +33,17 @@ os.environ["PATH"] = "{tmp_path}:" + os.environ["PATH"]
 
 # Add current directory to Python path for direct import
 import sys
-sys.path.insert(0, '/Users/akira/xoncc')
+sys.path.insert(0, '/home/jinguji/xonai')
 
-# Import and load xoncc directly
-import xoncc.xontrib
-xoncc.xontrib._load_xontrib_(__xonsh__)
+# Import and load xonai directly
+import xonai.xontrib
+xonai.xontrib._load_xontrib_(__xonsh__)
 
 # Test AI query - should not show "command not found"
 try:
     $(hello_world_test)
 except Exception:
-    pass  # Expected - handled by xoncc
+    pass  # Expected - handled by xonai
 
 print("PASS: AI integration test")
 """)
@@ -63,11 +63,11 @@ print("PASS: AI integration test")
         test_script.write_text("""
 # Add current directory to Python path for direct import
 import sys
-sys.path.insert(0, '/Users/akira/xoncc')
+sys.path.insert(0, '/home/jinguji/xonai')
 
-# Import and load xoncc directly
-import xoncc.xontrib
-xoncc.xontrib._load_xontrib_(__xonsh__)
+# Import and load xonai directly
+import xonai.xontrib
+xonai.xontrib._load_xontrib_(__xonsh__)
 
 # Mock subprocess.Popen to avoid calling real Claude
 import subprocess
@@ -107,11 +107,11 @@ print("PASS: Function override working")
         test_script.write_text("""
 # Add current directory to Python path for direct import
 import sys
-sys.path.insert(0, '/Users/akira/xoncc')
+sys.path.insert(0, '/home/jinguji/xonai')
 
-# Import and load xoncc directly
-import xoncc.xontrib
-xoncc.xontrib._load_xontrib_(__xonsh__)
+# Import and load xonai directly
+import xonai.xontrib
+xonai.xontrib._load_xontrib_(__xonsh__)
 
 # Test normal commands still work
 result = $(echo "hello")
@@ -151,17 +151,17 @@ except subprocess.CalledProcessError:
         test_script.write_text("""
 # Add current directory to Python path for direct import
 import sys
-sys.path.insert(0, '/Users/akira/xoncc')
+sys.path.insert(0, '/home/jinguji/xonai')
 
-# Import and load xoncc directly
-import xoncc.xontrib
-xoncc.xontrib._load_xontrib_(__xonsh__)
+# Import and load xonai directly
+import xonai.xontrib
+xonai.xontrib._load_xontrib_(__xonsh__)
 
 # Test simple query
 try:
     $(test)
 except Exception:
-    pass  # Expected - handled by xoncc
+    pass  # Expected - handled by xonai
 
 print("PASS: Real Claude integration test")
 """)

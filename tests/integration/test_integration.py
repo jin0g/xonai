@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Integration tests for xoncc with mock Claude."""
+"""Integration tests for xonai with mock Claude."""
 
 import subprocess
 
@@ -7,7 +7,7 @@ import pytest
 
 
 class TestXonccIntegration:
-    """Integration tests for xoncc."""
+    """Integration tests for xonai."""
 
     def test_no_error_message_displayed(self, tmp_path):
         """Test that natural language queries don't show error messages."""
@@ -24,11 +24,11 @@ sys.stderr = captured_stderr
 
 # Add current directory to Python path for direct import
 import sys
-sys.path.insert(0, '/Users/akira/xoncc')
+sys.path.insert(0, '/home/jinguji/xonai')
 
-# Import and load xoncc directly
-import xoncc.xontrib
-xoncc.xontrib._load_xontrib_(__xonsh__)
+# Import and load xonai directly
+import xonai.xontrib
+xonai.xontrib._load_xontrib_(__xonsh__)
 
 # Mock subprocess.Popen to prevent actual Claude calls
 import subprocess
@@ -47,11 +47,11 @@ def mock_popen(*args, **kwargs):
 subprocess.Popen = mock_popen
 
 # Test natural language query by using xonsh subprocess syntax
-# This should trigger command_not_found and be handled by xoncc
+# This should trigger command_not_found and be handled by xonai
 try:
     $(how to list files)
 except Exception:
-    # Expected - command not found should be handled by xoncc
+    # Expected - command not found should be handled by xonai
     pass
 
 # Restore stderr
@@ -82,11 +82,11 @@ else:
         test_script.write_text("""
 # Add current directory to Python path for direct import
 import sys
-sys.path.insert(0, '/Users/akira/xoncc')
+sys.path.insert(0, '/home/jinguji/xonai')
 
-# Import and load xoncc directly
-import xoncc.xontrib
-xoncc.xontrib._load_xontrib_(__xonsh__)
+# Import and load xonai directly
+import xonai.xontrib
+xonai.xontrib._load_xontrib_(__xonsh__)
 
 # Check that override is in place
 from xonsh.procs.specs import SubprocSpec
@@ -95,7 +95,7 @@ from xonsh.procs.specs import SubprocSpec
 import inspect
 source = inspect.getsource(SubprocSpec._run_binary)
 
-if "xoncc_run_binary" in source:
+if "xonai_run_binary" in source:
     print("PASS: Override is in place")
     exit(0)
 else:
@@ -148,11 +148,11 @@ os.environ["PATH"] = "{tmp_path}:" + os.environ["PATH"]
 
 # Add current directory to Python path for direct import
 import sys
-sys.path.insert(0, '/Users/akira/xoncc')
+sys.path.insert(0, '/home/jinguji/xonai')
 
-# Import and load xoncc directly
-import xoncc.xontrib
-xoncc.xontrib._load_xontrib_(__xonsh__)
+# Import and load xonai directly
+import xonai.xontrib
+xonai.xontrib._load_xontrib_(__xonsh__)
 
 # Time the execution
 start = time.time()
@@ -162,7 +162,7 @@ start = time.time()
 try:
     $(test natural language query)
 except Exception:
-    pass  # Expected - handled by xoncc
+    pass  # Expected - handled by xonai
 
 elapsed = time.time() - start
 
@@ -188,11 +188,11 @@ else:
         test_script.write_text("""
 # Add current directory to Python path for direct import
 import sys
-sys.path.insert(0, '/Users/akira/xoncc')
+sys.path.insert(0, '/home/jinguji/xonai')
 
-# Import and load xoncc directly
-import xoncc.xontrib
-xoncc.xontrib._load_xontrib_(__xonsh__)
+# Import and load xonai directly
+import xonai.xontrib
+xonai.xontrib._load_xontrib_(__xonsh__)
 
 # Test various normal commands
 import subprocess
@@ -261,17 +261,17 @@ subprocess.Popen = mock_popen
 
 # Add current directory to Python path for direct import
 import sys
-sys.path.insert(0, '/Users/akira/xoncc')
+sys.path.insert(0, '/home/jinguji/xonai')
 
-# Import and load xoncc directly
-import xoncc.xontrib
-xoncc.xontrib._load_xontrib_(__xonsh__)
+# Import and load xonai directly
+import xonai.xontrib
+xonai.xontrib._load_xontrib_(__xonsh__)
 
 # Test query in {language} using subprocess syntax
 try:
     $({query.replace(" ", "_")}_command_that_does_not_exist)
 except Exception:
-    pass  # Expected - handled by xoncc
+    pass  # Expected - handled by xonai
 
 print("PASS: {language} query processed without error")
 """)

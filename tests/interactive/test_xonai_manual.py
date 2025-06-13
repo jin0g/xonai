@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Manual test script for xoncc practical functionality.
+Manual test script for xonai practical functionality.
 Run this script manually to test real-world usage scenarios.
 """
 
@@ -10,47 +10,49 @@ import sys
 import tempfile
 from pathlib import Path
 
+import pytest
 
-def check_xoncc_command_availability():
-    """Test that xoncc command is available."""
-    print("🔍 Testing xoncc command availability...")
+
+def check_xonai_command_availability():
+    """Test that xonai command is available."""
+    print("🔍 Testing xonai command availability...")
     try:
-        result = subprocess.run(["which", "xoncc"], capture_output=True, text=True)
+        result = subprocess.run(["which", "xonai"], capture_output=True, text=True)
         if result.returncode == 0:
-            print(f"✅ xoncc found at: {result.stdout.strip()}")
+            print(f"✅ xonai found at: {result.stdout.strip()}")
             return True
         else:
-            print("❌ xoncc command not found in PATH")
+            print("❌ xonai command not found in PATH")
             return False
     except Exception as e:
-        print(f"❌ Error checking xoncc: {e}")
+        print(f"❌ Error checking xonai: {e}")
         return False
 
 
 def check_shell_startup():
-    """Test that xoncc starts and exits properly."""
-    print("\n🚀 Testing xoncc shell startup...")
+    """Test that xonai starts and exits properly."""
+    print("\n🚀 Testing xonai shell startup...")
     try:
         # Create a simple test script
         script = """
-print("Hello from xoncc!")
+print("Hello from xonai!")
 exit()
 """
         with tempfile.NamedTemporaryFile(mode="w", suffix=".xsh", delete=False) as f:
             f.write(script)
             script_path = f.name
 
-        result = subprocess.run(["xoncc", script_path], capture_output=True, text=True, timeout=10)
+        result = subprocess.run(["xonai", script_path], capture_output=True, text=True, timeout=10)
 
-        if result.returncode == 0 and "Hello from xoncc!" in result.stdout:
-            print("✅ xoncc starts and runs Python code successfully")
+        if result.returncode == 0 and "Hello from xonai!" in result.stdout:
+            print("✅ xonai starts and runs Python code successfully")
             return True
         else:
-            print(f"❌ xoncc startup failed: {result.stderr}")
+            print(f"❌ xonai startup failed: {result.stderr}")
             return False
 
     except subprocess.TimeoutExpired:
-        print("❌ xoncc startup timed out")
+        print("❌ xonai startup timed out")
         return False
     except Exception as e:
         print(f"❌ Error testing startup: {e}")
@@ -124,7 +126,7 @@ print(f"Variables: x={x}, y={y}")
 def greet(name):
     return f"Hello, {name}!"
 
-print(greet("xoncc"))
+print(greet("xonai"))
 
 # Test list comprehensions
 numbers = [i**2 for i in range(5)]
@@ -147,7 +149,7 @@ print("PASS: Python integration works")
         if (
             result.returncode == 0
             and "Variables: x=42, y=test" in result.stdout
-            and "Hello, xoncc!" in result.stdout
+            and "Hello, xonai!" in result.stdout
             and "PASS: Python integration works" in result.stdout
         ):
             print("✅ Python integration works correctly")
@@ -164,13 +166,13 @@ print("PASS: Python integration works")
 
 
 def check_xontrib_loading():
-    """Test that xoncc xontrib loads."""
+    """Test that xonai xontrib loads."""
     print("\n🔌 Testing xontrib loading...")
 
     script = """
 try:
-    xontrib load xoncc
-    print("✅ xoncc xontrib loaded successfully")
+    xontrib load xonai
+    print("✅ xonai xontrib loaded successfully")
 
     # Check if the xontrib added any functions
     if hasattr(__builtins__, 'events'):
@@ -192,7 +194,7 @@ print("PASS: xontrib test completed")
         result = subprocess.run(["xonsh", script_path], capture_output=True, text=True, timeout=10)
 
         if "PASS: xontrib test completed" in result.stdout:
-            if "xoncc xontrib loaded successfully" in result.stdout:
+            if "xonai xontrib loaded successfully" in result.stdout:
                 print("✅ xontrib loads successfully")
                 return True
             else:
@@ -213,10 +215,10 @@ def run_interactive_test():
     """Instructions for manual interactive testing."""
     print("\n🎯 Manual Interactive Test Instructions:")
     print("=" * 50)
-    print("Please run the following commands manually in xoncc:")
+    print("Please run the following commands manually in xonai:")
     print()
-    print("1. Start xoncc:")
-    print("   $ xoncc")
+    print("1. Start xonai:")
+    print("   $ xonai")
     print()
     print("2. Test basic commands:")
     print("   $ echo 'Hello World'")
@@ -251,11 +253,11 @@ def run_interactive_test():
 
 def main():
     """Run all automated tests."""
-    print("🧪 xoncc Practical Test Suite")
+    print("🧪 xonai Practical Test Suite")
     print("=" * 40)
 
     tests = [
-        ("Command Availability", check_xoncc_command_availability),
+        ("Command Availability", check_xonai_command_availability),
         ("Shell Startup", check_shell_startup),
         ("Basic Commands", check_basic_commands),
         ("Python Integration", check_python_integration),
@@ -293,21 +295,37 @@ def main():
 
 
 # Pytest wrapper functions
-def test_xoncc_command_availability_pytest():
+@pytest.mark.skipif(
+    not subprocess.run(["which", "xonai"], capture_output=True).returncode == 0,
+    reason="xonai command not installed",
+)
+def test_xonai_command_availability_pytest():
     """Pytest wrapper for command availability test."""
-    assert check_xoncc_command_availability()
+    assert check_xonai_command_availability()
 
 
+@pytest.mark.skipif(
+    not subprocess.run(["which", "xonai"], capture_output=True).returncode == 0,
+    reason="xonai command not installed",
+)
 def test_shell_startup_pytest():
     """Pytest wrapper for shell startup test."""
     assert check_shell_startup()
 
 
+@pytest.mark.skipif(
+    not subprocess.run(["which", "xonai"], capture_output=True).returncode == 0,
+    reason="xonai command not installed",
+)
 def test_basic_commands_pytest():
     """Pytest wrapper for basic commands test."""
     assert check_basic_commands()
 
 
+@pytest.mark.skipif(
+    not subprocess.run(["which", "xonai"], capture_output=True).returncode == 0,
+    reason="xonai command not installed",
+)
 def test_python_integration_pytest():
     """Pytest wrapper for Python integration test."""
     assert check_python_integration()

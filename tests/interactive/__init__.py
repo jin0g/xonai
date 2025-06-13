@@ -1,1 +1,1 @@
-"""Interactive tests for xoncc (manual and automated)."""
+"""Interactive tests for xonai (manual and automated)."""

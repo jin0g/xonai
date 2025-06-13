@@ -1,29 +1,29 @@
-# xoncc - Xonsh on Claude Code
+# xonai - AI Integration for Xonsh Shell
 
 ## What is this?
 
-xoncc seamlessly integrates Claude Code into your xonsh shell, transforming natural language into shell commands and answers.
+xonai seamlessly integrates AI assistants into your xonsh shell, transforming natural language into shell commands and answers. Currently supports Claude AI with a modular architecture for future AI models.
 
 ## Installation
 
 1. Install Claude Code: [Installation Guide](https://docs.anthropic.com/en/docs/claude-code/getting-started)
 
-2. Install xoncc:
+2. Install xonai:
    ```bash
-   pip install xoncc
+   pip install xonai
    ```
 
 ## Usage
 
-Launch with xoncc command:
+Launch with xonai command:
 ```bash
-xoncc
+xonai
 ```
 
 ## Requirements
 
 - Python 3.9+
-- Claude Code
+- Claude Code (logged in)
 - xonsh shell
 
 ## Status & Roadmap
@@ -31,14 +31,13 @@ xoncc
 ### ✅ Current Features
 - [x] Natural language commands in xonsh shell
 - [x] Real-time AI responses with progress display
-- [x] Automatic Claude Code login handling
+- [x] Emoji-rich output formatting with tool indicators
+- [x] Modular AI architecture (supports multiple AI models)
 
 ### 📋 Planned Features
-- [ ] Output capture with `$()` syntax
+- [ ] Markdown syntax highlighting and colorization
+- [ ] Detailed tool results display
+- [ ] Session continuity across queries
+- [ ] Capture with `$()` syntax
 - [ ] Pipeline support for natural language queries
-- [ ] Shell context awareness (history, environment, current directory)
-- [ ] Parallel AI processing with improved Ctrl+C handling
-- [ ] AI instruction queuing and parallel execution
-- [ ] Fullscreen mode compatibility
-
-For detailed technical information and development notes, see [CLAUDE.md](CLAUDE.md).
+- [ ] Parallel AI processing

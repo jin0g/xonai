@@ -1,5 +1,5 @@
 """
-Pytest configuration for xoncc tests.
+Pytest configuration for xonai tests.
 """
 
 import sys
@@ -8,7 +8,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from tests.dummy_claude.setup_test_env import TestEnvironment
+# TestEnvironment no longer needed with new AI architecture
 
 # Add the parent directory to sys.path so we can import xontrib
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -91,7 +91,8 @@ def mock_subprocess(monkeypatch):
 
 
 @pytest.fixture
-def dummy_claude_env():
-    """Setup test environment with dummy Claude CLI."""
-    with TestEnvironment() as env:
-        yield env
+def dummy_ai_env(monkeypatch):
+    """Setup test environment with dummy AI."""
+    # Enable dummy AI mode
+    monkeypatch.setenv("XONAI_DUMMY", "1")
+    yield

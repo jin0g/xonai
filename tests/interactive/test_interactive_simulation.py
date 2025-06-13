@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Interactive test simulation for xoncc with delayed responses.
+Interactive test simulation for xonai with delayed responses.
 This simulates Claude's streaming behavior.
 """
 
@@ -81,10 +81,10 @@ def mock_claude_server(input_queue, output_file):
             continue
 
 
-def test_interactive_xoncc():
-    """Test xoncc with simulated interactive Claude responses."""
+def test_interactive_xonai():
+    """Test xonai with simulated interactive Claude responses."""
 
-    print("=== Interactive xoncc Test Simulation ===\n")
+    print("=== Interactive xonai Test Simulation ===\n")
 
     # Test queries
     test_queries = ["how do I list files", "ファイルを探す方法", "find large files quickly"]
@@ -114,20 +114,20 @@ def test_interactive_xoncc():
     print("\n=== Test Complete ===")
 
 
-def test_real_xoncc_behavior():
-    """Test the actual xoncc behavior with a mock Claude process."""
+def test_real_xonai_behavior():
+    """Test the actual xonai behavior with a mock Claude process."""
 
-    print("\n=== Testing Real xoncc Behavior ===\n")
+    print("\n=== Testing Real xonai Behavior ===\n")
 
-    # Create a test script that uses xoncc
-    test_script = Path("/tmp/test_xoncc_interactive.xsh")
+    # Create a test script that uses xonai
+    test_script = Path("/tmp/test_xonai_interactive.xsh")
     test_script.write_text("""
 import time
-print("Loading xoncc...")
-xontrib load xoncc
+print("Loading xonai...")
+xontrib load xonai
 
 print("Testing natural language query...")
-# This should trigger xoncc without error
+# This should trigger xonai without error
 how to list Python files
 
 print("\\nTest completed!")
@@ -153,9 +153,9 @@ echo '{"type": "content_block_delta", "delta": {"text": "Use find . -name *.py"}
 
     try:
         # Note: This would actually run if we had xonsh available
-        print("Would run: xonsh test_xoncc_interactive.xsh")
+        print("Would run: xonsh test_xonai_interactive.xsh")
         print("Expected behavior:")
-        print("1. xoncc loads without error")
+        print("1. xonai loads without error")
         print("2. Natural language query processes without 'command not found' error")
         print("3. Claude response streams in real-time")
         print("4. Token count updates during processing")
@@ -169,7 +169,7 @@ echo '{"type": "content_block_delta", "delta": {"text": "Use find . -name *.py"}
 
 if __name__ == "__main__":
     # Run interactive simulation
-    test_interactive_xoncc()
+    test_interactive_xonai()
 
     # Test real behavior
-    test_real_xoncc_behavior()
+    test_real_xonai_behavior()

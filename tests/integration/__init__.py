@@ -1,1 +1,1 @@
-"""Integration tests for xoncc."""
+"""Integration tests for xonai."""
