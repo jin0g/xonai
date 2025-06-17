@@ -49,18 +49,18 @@ jobs:
     - name: Lint with ruff  
       run: |
         echo "=== Running ruff check ==="
-        python -m ruff check xonai/ tests/ --verbose || true
+        python -m ruff check xonai/ tests/
         echo "=== Running ruff format check ==="
-        python -m ruff format --check xonai/ tests/ --verbose || true
+        python -m ruff format --check xonai/ tests/
     
     - name: Type check with mypy
       run: |
-        python -m mypy xonai/ --ignore-missing-imports || true
+        python -m mypy xonai/ --ignore-missing-imports
     
     - name: Run unit tests (excluding Claude CLI integration)
       run: |
         # Run all tests
-        python -m pytest -v --cov=xonai --cov-report=term-missing --cov-report=xml || true
+        python -m pytest -v --cov=xonai --cov-report=term-missing --cov-report=xml
       env:
         # Skip integration tests that require Claude CLI
         SKIP_CLAUDE_INTEGRATION: "true"
