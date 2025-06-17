@@ -14,10 +14,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ['3.9', '3.10', '3.11', '3.12']
-        # Temporarily Ubuntu-only for debugging CI issues
-        # Will expand to all platforms once CI is stable
+        # Test on all major platforms with Python 3.9+
+        # Now that CI issues are resolved
     
     steps:
     - uses: actions/checkout@v4
@@ -32,31 +32,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install -e ".[test]"
     
-    - name: Debug environment
-      run: |
-        echo "=== Python version ==="
-        python --version
-        echo "=== Current directory ==="
-        pwd
-        echo "=== Directory contents ==="
-        ls -la
-        echo "=== xonai directory ==="
-        ls -la xonai/
-        echo "=== tests directory ==="
-        ls -la tests/
-        echo "=== Python path ==="
-        python -c "import sys; print('\n'.join(sys.path))"
-        echo "=== Check if xonai can be imported ==="
-        python -c "import xonai; print('xonai imported successfully')" || echo "Failed to import xonai"
-        
     - name: Lint with ruff
       run: |
-        echo "=== Checking ruff version ==="
-        python -m ruff --version
-        echo "=== Running ruff check ==="
-        python -m ruff check xonai/ tests/ --verbose || echo "Ruff check failed"
-        echo "=== Running ruff format check ==="
-        python -m ruff format --check xonai/ tests/ --verbose || echo "Ruff format check failed"
+        python -m ruff check xonai/ tests/
+        python -m ruff format --check xonai/ tests/
     
     - name: Type check with mypy
       run: |
