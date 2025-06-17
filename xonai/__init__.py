@@ -76,15 +76,5 @@ __all__ = [
 # Check if we're running in xonsh
 HAS_XONSH = importlib.util.find_spec("xonsh") is not None
 
-if not HAS_XONSH:
-    # Not in xonsh, provide a helpful message
-    def _not_in_xonsh():
-        raise RuntimeError(
-            "xonai can only be used within a xonsh shell. "
-            "Please install xonsh and run 'xontrib load xonai' "
-            "from within a xonsh session."
-        )
-
-    # Make all attributes raise an error
-    def __getattr__(name):
-        _not_in_xonsh()
+# Allow importing the package even without xonsh for testing/inspection
+# The xontrib functionality will only work within xonsh
