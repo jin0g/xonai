@@ -53,9 +53,9 @@ jobs:
         echo "=== Checking ruff version ==="
         python -m ruff --version
         echo "=== Running ruff check ==="
-        python -m ruff check xonai/ tests/ --verbose || echo "Ruff check failed"
+        python -m ruff check xonai/ tests/
         echo "=== Running ruff format check ==="
-        python -m ruff format --check xonai/ tests/ --verbose || echo "Ruff format check failed"
+        python -m ruff format --check xonai/ tests/
     
     - name: Type check with mypy
       run: |
