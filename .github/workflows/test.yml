@@ -32,6 +32,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install -e ".[test]"
     
+    - name: Verify package installation
+      run: |
+        python -c "import xonai; print('✅ xonai package imported successfully')"
+        
     - name: Lint with ruff
       run: |
         python -m ruff check xonai/ tests/
