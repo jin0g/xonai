@@ -56,13 +56,12 @@ test = [
     "mypy>=1.0",
 ]
 
+[project.scripts]
+xonai = "xonai.xonai:main"
+
 [tool.setuptools]
 packages = ["xonai", "xonai.ai"]
 include-package-data = true
-script-files = ["xonai/xonai"]
-
-[tool.setuptools.package-data]
-xonai = ["xonai"]
 
 [tool.ruff]
 target-version = "py38"

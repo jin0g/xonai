@@ -115,6 +115,7 @@ venv.bak/
 
 # Virtual environment (never commit)
 /venv/
+/test_venv/
 
 # Spyder project settings
 .spyderproject
