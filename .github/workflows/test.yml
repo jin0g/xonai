@@ -14,10 +14,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
-        python-version: ['3.9', '3.12']
-        # Minimal testing: ubuntu only, Python 3.9 (min) and 3.12 (latest)
-        # Full integration testing requires Claude CLI which is not available in CI
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+        # Test on all major platforms with Python 3.9+
+        # Integration testing requires Claude CLI which is not available in CI
     
     steps:
     - uses: actions/checkout@v4
