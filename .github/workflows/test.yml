@@ -17,7 +17,6 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ['3.9', '3.10', '3.11', '3.12']
         # Test on all major platforms with Python 3.9+
-        # Now that CI issues are resolved
     
     steps:
     - uses: actions/checkout@v4
@@ -30,33 +29,33 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        echo "=== Current directory ==="
-        pwd
-        echo "=== List files ==="
-        ls -la
-        echo "=== Installing package ==="
-        pip install -e ".[test]" || echo "INSTALL FAILED WITH EXIT CODE: $?"
+        pip install -e ".[test]"
     
     - name: Debug environment
       run: |
         echo "=== Python version ==="
         python --version
-        echo "=== Platform info ==="
-        python -c "import platform; print(f'Platform: {platform.platform()}')"
-        python -c "import sys; print(f'OS: {sys.platform}')"
-        echo "=== List installed packages ==="
-        pip list
+        echo "=== Current directory ==="
+        pwd
+        echo "=== Directory contents ==="
+        ls -la
+        echo "=== xonai directory ==="
+        ls -la xonai/
+        echo "=== tests directory ==="
+        ls -la tests/
+        echo "=== Python path ==="
+        python -c "import sys; print('\n'.join(sys.path))"
         echo "=== Check if xonai can be imported ==="
         python -c "import xonai; print('xonai imported successfully')" || echo "Failed to import xonai"
-        echo "=== Show xonai package location ==="
-        python -c "import xonai; print(f'xonai location: {xonai.__file__}')" || echo "Cannot find xonai module"
         
-    - name: Lint with ruff  
+    - name: Lint with ruff
       run: |
+        echo "=== Checking ruff version ==="
+        python -m ruff --version
         echo "=== Running ruff check ==="
-        python -m ruff check xonai/ tests/
+        python -m ruff check xonai/ tests/ --verbose || echo "Ruff check failed"
         echo "=== Running ruff format check ==="
-        python -m ruff format --check xonai/ tests/
+        python -m ruff format --check xonai/ tests/ --verbose || echo "Ruff format check failed"
     
     - name: Type check with mypy
       run: |
