@@ -109,6 +109,7 @@ def _load_xontrib_(xsh, **kwargs):
 
         traceback.print_exc()
 
-    # Silent loading - no welcome message
+    # Print loading message for interactive tests
+    print("xonai loaded - natural language commands enabled")
 
     return {}

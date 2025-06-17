@@ -6,7 +6,7 @@ import subprocess
 import pytest
 
 
-class TestXonccIntegration:
+class TestXonaiIntegration:
     """Integration tests for xonai."""
 
     def test_no_error_message_displayed(self, tmp_path):

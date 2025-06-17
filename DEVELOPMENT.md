@@ -173,7 +173,7 @@ pytest  # This runs tests + linting via pytest-ruff
 
 For testing without real Claude CLI, set the environment variable:
 ```bash
-export XONCC_DUMMY=1
+export XONAI_DUMMY=1
 ```
 
 This will use `dummy_claude` command instead of `claude`.
@@ -266,7 +266,7 @@ Attempting partial detection causes more harm than good.
 **Testing Strategy**:
 - **Real Claude CLI**: Use actual `claude` command for integration testing (but session continuity fails)
 - **Dummy Claude CLI**: Use mock implementation for CI/Actions testing (simulates working session continuity)
-- Environment variable `XONCC_DUMMY=1` switches between real and dummy modes
+- Environment variable `XONAI_DUMMY=1` switches between real and dummy modes
 - Local development requires both real and dummy tests to pass 100%
 - Actions only runs dummy tests to avoid Claude CLI dependency
 - **Important**: Dummy tests pass to verify implementation correctness, but real Claude CLI has limitations

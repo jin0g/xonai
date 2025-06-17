@@ -1,19 +1,19 @@
 #!/usr/bin/expect -f
-# Interactive test script for xoncc using expect
+# Interactive test script for xonai using expect
 # Tests Ctrl-C handling, interactive responses, and timeouts
 
 set timeout 30
 set project_root [file dirname [file dirname [file normalize $argv0]]]
 
-# Test 1: Basic xoncc loading
-spawn xonsh -c "import sys; sys.path.insert(0, '$project_root'); xontrib load xoncc; print('READY'); import time; time.sleep(60)"
+# Test 1: Basic xonai loading
+spawn xonsh -c "import sys; sys.path.insert(0, '$project_root'); xontrib load xonai; print('READY'); import time; time.sleep(60)"
 
 expect {
-    "xoncc loaded - natural language commands enabled" {
-        puts "✓ Test 1 PASSED: xoncc loaded successfully"
+    "xonai loaded - natural language commands enabled" {
+        puts "✓ Test 1 PASSED: xonai loaded successfully"
     }
     timeout {
-        puts "✗ Test 1 FAILED: xoncc loading timed out"
+        puts "✗ Test 1 FAILED: xonai loading timed out"
         exit 1
     }
 }
