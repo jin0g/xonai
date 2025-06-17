@@ -10,15 +10,19 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.9', '3.12']
     
     steps:
     - uses: actions/checkout@v4
     
-    - name: Set up Python
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11'
+        python-version: ${{ matrix.python-version }}
     
     - name: Install package only
       run: |
@@ -28,3 +32,10 @@ jobs:
     - name: Import test
       run: |
         python -c "import xonai; print(f'xonai version: {xonai.__version__}')"
+    
+    - name: Test with minimal dependencies
+      run: |
+        pip install pytest ruff mypy
+        python -m ruff check xonai/
+        python -m mypy xonai/ --ignore-missing-imports
+        python -m pytest tests/unit/test_display.py -v
