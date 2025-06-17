@@ -34,17 +34,17 @@ jobs:
     
     - name: Lint with ruff
       run: |
-        python -m ruff check xontrib/ xoncc/ tests/
-        python -m ruff format --check xontrib/ xoncc/ tests/
+        python -m ruff check xonai/ tests/
+        python -m ruff format --check xonai/ tests/
     
     - name: Type check with mypy
       run: |
-        python -m mypy xontrib/ xoncc/ --ignore-missing-imports
+        python -m mypy xonai/ --ignore-missing-imports
     
     - name: Run unit tests (excluding Claude CLI integration)
       run: |
-        # Only run tests that don't require Claude CLI
-        python -m pytest tests/test_setup_claude.py tests/test_formatters_*.py tests/test_xoncc_simple.py -v --cov=xontrib --cov=xoncc --cov-report=term-missing --cov-report=xml
+        # Run all tests
+        python -m pytest -v --cov=xonai --cov-report=term-missing --cov-report=xml
       env:
         # Skip integration tests that require Claude CLI
         SKIP_CLAUDE_INTEGRATION: "true"
