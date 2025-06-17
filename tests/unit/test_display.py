@@ -34,9 +34,8 @@ class TestResponseFormatter:
         formatter.format(response)
 
         captured = capsys.readouterr()
-        assert (
-            captured.out == "🚀 Claude Code: model=claude-sonnet-4-20250514, id=1234567890abcdef\n"
-        )
+        expected = "\n🚀 Claude Code: model=claude-sonnet-4-20250514, id=1234567890abcdef\n"
+        assert captured.out == expected
 
     def test_tool_use_bash(self, capsys):
         """Test Bash tool formatting."""
@@ -54,7 +53,7 @@ class TestResponseFormatter:
         formatter.format(response)
 
         captured = capsys.readouterr()
-        assert captured.out == "📖 /home/user/file.txt\n"
+        assert captured.out == "📖 Reading /home/user/file.txt\n"
 
     def test_tool_use_todo_write(self, capsys):
         """Test TodoWrite tool formatting."""
@@ -63,7 +62,7 @@ class TestResponseFormatter:
         formatter.format(response)
 
         captured = capsys.readouterr()
-        assert captured.out == "📝 TodoWrite\n"
+        assert captured.out == "📝 Updating todos\n"
 
     def test_tool_result_empty(self, capsys):
         """Test empty tool results."""
@@ -72,7 +71,7 @@ class TestResponseFormatter:
         formatter.format(response)
 
         captured = capsys.readouterr()
-        assert captured.out == "(empty output)\n"
+        assert captured.out == ""
 
     def test_tool_result_shown(self, capsys):
         """Test tool results are shown with tool name."""
@@ -81,7 +80,7 @@ class TestResponseFormatter:
         formatter.format(response)
 
         captured = capsys.readouterr()
-        assert captured.out == "[Bash] Line 1\nLine 2\nLine 3\n"
+        assert captured.out == "  → Output: 3 lines\n"
 
     def test_result_response(self, capsys):
         """Test result summary formatting."""
@@ -95,7 +94,7 @@ class TestResponseFormatter:
         captured = capsys.readouterr()
         expected = (
             "\n📊 duration_ms=5500, cost_usd=0.005000, "
-            "input_tokens=1000, output_tokens=500, next_session_tokens=1,500\n"
+            "input_tokens=1000, output_tokens=500, next_session_tokens=1500\n"
         )
         assert captured.out == expected
 
@@ -106,7 +105,7 @@ class TestResponseFormatter:
         formatter.format(response)
 
         captured = capsys.readouterr()
-        assert captured.out == "\n❌ Something went wrong\n"
+        assert captured.out == ""
 
     def test_streaming_text_with_newline(self, capsys):
         """Test multiple streaming messages."""
@@ -120,7 +119,7 @@ class TestResponseFormatter:
         formatter.format(ErrorResponse(content="Error"))
 
         captured = capsys.readouterr()
-        assert captured.out == "Hello world\n\n❌ Error\n"
+        assert captured.out == "Hello world\n"
 
     def test_tool_use_ls_with_ignore(self, capsys):
         """Test LS tool with ignore parameter formatting."""
@@ -131,7 +130,7 @@ class TestResponseFormatter:
         formatter.format(response)
 
         captured = capsys.readouterr()
-        assert captured.out == "📁 /Users/akira/xonai (ignore: venv, htmlcov, *.egg-info)\n"
+        assert captured.out == "📁 ls /Users/akira/xonai (ignore: venv, htmlcov, *.egg-info)\n"
 
     def test_tool_use_websearch(self, capsys):
         """Test WebSearch tool formatting."""
@@ -140,7 +139,7 @@ class TestResponseFormatter:
         formatter.format(response)
 
         captured = capsys.readouterr()
-        assert captured.out == "🔍 site:pypi.org xonai\n"
+        assert captured.out == "🔍 Searching: site:pypi.org xonai\n"
 
     def test_error_types(self, capsys):
         """Test error response with different error types."""
@@ -153,7 +152,7 @@ class TestResponseFormatter:
         formatter.format(response)
 
         captured = capsys.readouterr()
-        assert captured.out == "\n❌ Please log in to Claude CLI\n"
+        assert captured.out == ""
 
         # Test with None error type (unexpected error)
         formatter = ResponseFormatter()
@@ -161,7 +160,7 @@ class TestResponseFormatter:
         formatter.format(response)
 
         captured = capsys.readouterr()
-        assert captured.out == "\n❌ Unexpected error occurred\n"
+        assert captured.out == ""
 
     def test_content_type_defaults(self):
         """Test content type defaults for different response types."""

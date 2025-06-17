@@ -39,10 +39,24 @@ class ResponseFormatter:
                 # Streaming text - print without newline
                 print(output, end="", flush=True)
                 self._last_was_newline = output.endswith("\n")
-            else:
-                # Other types - print with newline if needed
+            elif isinstance(response, InitResponse):
+                # Init gets a blank line before
                 if not self._last_was_newline:
-                    print()  # Add newline after streaming text
+                    print()
+                print()  # Blank line before init
+                print(output)
+                self._last_was_newline = True
+            elif isinstance(response, ResultResponse):
+                # Result gets a blank line before
+                if not self._last_was_newline:
+                    print()
+                print()  # Blank line before result
+                print(output)
+                self._last_was_newline = True
+            else:
+                # Tool use/results - simple output, no extra spacing
+                if not self._last_was_newline:
+                    print()  # Complete any pending line
                 print(output)
                 self._last_was_newline = True
 
@@ -80,51 +94,101 @@ class ResponseFormatter:
         self._current_tool = tool_name
         content = response.content
 
-        # Map tool names to emojis and format content
+        # Map tool names to emojis and simplified content
         if tool_name == "LS":
-            return self._truncate_to_width(f"📁 {content}")
+            # Just show the path being listed
+            return f"📁 ls {content}"
         elif tool_name in ["Read", "NotebookRead"]:
-            return self._truncate_to_width(f"📖 {content}")
+            # Just show filename
+            return f"📖 Reading {content}"
         elif tool_name in ["Edit", "Write", "MultiEdit", "NotebookEdit"]:
-            return self._truncate_to_width(f"✏️ {content}")
+            # Just show filename
+            return f"✏️ Editing {content}"
         elif tool_name == "Bash":
-            return self._truncate_to_width(f"🔧 {content}")
+            # Show command but truncate if too long
+            if len(content) > 60:
+                return f"🔧 {content[:57]}..."
+            return f"🔧 {content}"
         elif tool_name == "WebSearch":
-            return self._truncate_to_width(f"🔍 {content}")
+            return f"🔍 Searching: {content}"
         elif tool_name == "WebFetch":
-            return self._truncate_to_width(f"🌐 {content}")
+            return f"🌐 Fetching: {content}"
         elif tool_name == "TodoRead":
-            return "📋 TodoRead"
+            return "📋 Reading todos"
         elif tool_name == "TodoWrite":
-            # Parse todos from content if it's a special format
-            return "📝 TodoWrite"
+            return "📝 Updating todos"
         elif tool_name == "Task":
-            return self._truncate_to_width(f"🤖 Task: {content}")
+            return f"🤖 Task: {content}"
         elif tool_name in ["Glob", "Grep"]:
-            return self._truncate_to_width(f"🔍 {content}")
+            # Show pattern only
+            if " in " in content:
+                pattern = content.split(" in ")[0]
+                return f"🔍 Searching for: {pattern}"
+            return f"🔍 Searching: {content}"
         else:
             # Generic tool format
-            return self._truncate_to_width(f"🔧 {tool_name}: {content}")
+            return f"🔧 {tool_name}: {content}"
 
 
     def _format_tool_result(self, response: ToolResultResponse) -> str:
-        """Format tool results - show all content."""
+        """Format tool results - simplified output."""
         content = response.content
         tool = response.tool
 
-        if not content.strip():
-            return "(empty output)"
+        if not content or not content.strip():
+            return ""  # Don't show empty results
 
-        # Show tool name with content
-        if tool:
-            return f"[{tool}] {content}"
+        # Simplify output based on tool
+        if tool == "Read":
+            lines = content.count('\n') + 1
+            return f"  → Read {lines} lines"
+        elif tool == "LS":
+            # Count files/directories
+            items = content.strip().split('\n')
+            return f"  → Found {len(items)} items"
+        elif tool in ["Edit", "MultiEdit"]:
+            # Show edit summary
+            return "  → File updated"
+        elif tool == "Write":
+            return "  → File written"
+        elif tool == "Bash":
+            # Show first line of output if short, otherwise just indicate output
+            lines = content.strip().split('\n')
+            if len(lines) == 1 and len(lines[0]) < 60:
+                return f"  → {lines[0]}"
+            elif len(lines) > 1:
+                return f"  → Output: {len(lines)} lines"
+            else:
+                return "  → Command completed"
+        elif tool in ["Glob", "Grep"]:
+            # Count matches
+            matches = content.strip().split('\n') if content.strip() else []
+            if matches:
+                return f"  → Found {len(matches)} matches"
+            else:
+                return "  → No matches found"
+        elif tool == "TodoRead":
+            # Count todos
+            import json
+            try:
+                todos = json.loads(content)
+                return f"  → {len(todos)} todos"
+            except Exception:
+                return "  → Todos listed"
+        elif tool == "TodoWrite":
+            return "  → Todos updated"
         else:
-            return content
+            # For other tools, show brief summary
+            lines = content.strip().split('\n')
+            if len(lines) == 1 and len(lines[0]) < 80:
+                return f"  → {lines[0]}"
+            else:
+                return "  → Completed"
 
     def _format_error(self, response: ErrorResponse) -> str:
         """Format error messages."""
-        # Error messages are not truncated, with blank line before
-        return f"\n❌ {response.content}"
+        # Don't show errors to the user - just return empty
+        return ""
 
     def _format_result(self, response: ResultResponse) -> str:
         """Format final result summary."""
@@ -133,9 +197,9 @@ class ResponseFormatter:
         token_count = response.token
 
         if stats:
-            return f"\n📊 {stats}, next_session_tokens={token_count:,}"
+            return f"📊 {stats}, next_session_tokens={token_count}"
         else:
-            return f"\n📊 next_session_tokens={token_count:,}"
+            return f"📊 next_session_tokens={token_count}"
 
     def _truncate_to_width(self, text: str, width: Optional[int] = None) -> str:
         """Truncate text to fit terminal width using Rich."""

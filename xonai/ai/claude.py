@@ -169,7 +169,7 @@ class ClaudeAI(BaseAI):
                     text = item.get("text", "").strip()
                     if text:
                         # Add newline before assistant messages
-                        return MessageResponse(content=f"\n💬 {text}")
+                        return MessageResponse(content=f"\n{text}")
                 elif item.get("type") == "tool_use":
                     # Tool usage
                     tool_name = item.get("name", "unknown")

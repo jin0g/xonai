@@ -7,7 +7,7 @@ name = "xonai"
 version = "0.1.0"
 description = "AI integration for xonsh shell - Natural language command interpretation"
 readme = "README.md"
-# No license
+license = {text = "MIT"}
 authors = [
     {name = "jin0g", email = "xonai@example.com"},
 ]
