@@ -62,7 +62,7 @@ include-package-data = true
 script-files = ["xonai/xonai"]
 
 [tool.setuptools.package-data]
-xonai = ["*.py", "xonai", "ai/*.py"]
+xonai = ["xonai"]
 
 [tool.ruff]
 target-version = "py38"
