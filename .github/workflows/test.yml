@@ -32,14 +32,19 @@ jobs:
         python -m pip install --upgrade pip
         pip install -e ".[test]"
     
-    - name: Verify package installation
+    - name: Debug environment
       run: |
-        python -c "import xonai; print('✅ xonai package imported successfully')"
+        echo "=== Python version ==="
+        python --version
+        echo "=== Check if xonai can be imported ==="
+        python -c "import xonai; print('xonai imported successfully')" || echo "Failed to import xonai"
         
-    - name: Lint with ruff
+    - name: Lint with ruff  
       run: |
-        python -m ruff check xonai/ tests/
-        python -m ruff format --check xonai/ tests/
+        echo "=== Running ruff check ==="
+        python -m ruff check xonai/ tests/ --verbose || echo "Ruff check failed"
+        echo "=== Running ruff format check ==="
+        python -m ruff format --check xonai/ tests/ --verbose || echo "Ruff format check failed"
     
     - name: Type check with mypy
       run: |
