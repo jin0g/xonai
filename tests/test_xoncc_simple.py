@@ -30,11 +30,13 @@ class TestXonccSimple:
 
         # Verify subprocess.run was called for 'which claude'
         mock_run.assert_called_with(['which', 'claude'], capture_output=True, text=True)
-        
+
         # Verify subprocess.Popen was called with correct command
         assert mock_popen.called
         call_args = mock_popen.call_args[0][0]
-        assert call_args == ["claude", "--print", "--output-format", "stream-json", "how do I find large files"]
+        assert call_args == [
+            "claude", "--print", "--output-format", "stream-json", "how do I find large files"
+        ]
 
     @mock.patch("subprocess.run")
     @mock.patch("subprocess.Popen")

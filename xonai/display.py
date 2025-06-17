@@ -140,8 +140,8 @@ class ResponseFormatter:
 
         # Simplify output based on tool
         if tool == "Read":
-            lines = content.count('\n') + 1
-            return f"  → Read {lines} lines"
+            line_count = content.count('\n') + 1
+            return f"  → Read {line_count} lines"
         elif tool == "LS":
             # Count files/directories
             items = content.strip().split('\n')
