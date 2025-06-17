@@ -109,9 +109,6 @@ addopts = [
     "--cov=xonai",
     "--cov-report=term-missing",
     "--cov-report=html",
-    "--ruff",
-    "--ruff-format",
-    "--mypy",
 ]
 
 [tool.coverage.run]

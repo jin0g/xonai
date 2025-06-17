@@ -34,17 +34,7 @@ jobs:
     
     - name: Lint with ruff
       run: |
-        echo "Current directory:"
-        pwd
-        echo "Files in xonai/:"
-        ls -la xonai/
-        echo "Files in tests/:"
-        ls -la tests/
-        echo "Running ruff check on xonai only first..."
-        python -m ruff check xonai/
-        echo "Running ruff check on tests only..."
-        python -m ruff check tests/
-        echo "Running ruff format check..."
+        python -m ruff check xonai/ tests/
         python -m ruff format --check xonai/ tests/
     
     - name: Type check with mypy
