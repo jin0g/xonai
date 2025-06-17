@@ -162,12 +162,12 @@ Desktop.ini
 CC_ID
 
 # Test and debug files
-debug_xoncc.py
-test_xoncc_*.py
-test_xoncc_*.xsh
+debug_xonai.py
+test_xonai_*.py
+test_xonai_*.xsh
 hello.py
-tests/interactive/test_xoncc_simple*.py
-tests/interactive/test_xoncc_real.py
+tests/interactive/test_xonai_simple*.py
+tests/interactive/test_xonai_real.py
 
 # Dummy claude executable
 tests/dummy_claude/dummy_claude

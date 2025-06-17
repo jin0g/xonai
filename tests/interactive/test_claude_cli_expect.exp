@@ -26,24 +26,24 @@ if {[catch {exec which expect} result]} {
     exit 0
 }
 
-# Test 1: Launch xoncc and load extension
-puts "\nTest 1: Loading xoncc..."
+# Test 1: Launch xonai and load extension
+puts "\nTest 1: Loading xonai..."
 spawn xonsh
 
 # Send the xontrib load command
 send "import sys; sys.path.insert(0, '$project_root')\r"
 expect ">>> "
 
-send "xontrib load xoncc\r"
+send "xontrib load xonai\r"
 expect {
-    "xoncc loaded - natural language commands enabled" {
-        test_passed "xoncc loading"
+    "xonai loaded - natural language commands enabled" {
+        test_passed "xonai loading"
     }
-    "Failed to load xoncc" {
-        test_failed "xoncc loading" "Extension failed to load"
+    "Failed to load xonai" {
+        test_failed "xonai loading" "Extension failed to load"
     }
     timeout {
-        test_failed "xoncc loading" "Timeout waiting for load confirmation"
+        test_failed "xonai loading" "Timeout waiting for load confirmation"
     }
 }
 
@@ -190,23 +190,9 @@ expect {
     }
 }
 
-# Test 6: Test cc() function
-puts "\nTest 6: Testing cc() function..."
-send "cc('hello')\r"
-
-expect {
-    "Asking Claude about:" {
-        test_passed "cc() function works"
-        expect ">>> "
-    }
-    "Error:" {
-        test_skipped "cc() function" "Function call error"
-        expect ">>> "
-    }
-    timeout {
-        test_failed "cc() function" "Function call timed out"
-    }
-}
+# Test 6: Test direct AI query (cc() function removed in xonai refactoring)
+puts "\nTest 6: Skipping cc() function test (removed in xonai refactoring)..."
+test_skipped "cc() function" "Function removed in xonai refactoring"
 
 # Clean exit
 puts "\nTest 7: Clean exit..."

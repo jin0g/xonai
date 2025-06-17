@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Integration tests for xonai with mock Claude."""
+"""Integration tests for xoncc with mock Claude."""
 
 import subprocess
 
 import pytest
 
 
-class TestXonaiIntegration:
-    """Integration tests for xonai."""
+class TestXonccIntegration:
+    """Integration tests for xoncc."""
 
     def test_no_error_message_displayed(self, tmp_path):
         """Test that natural language queries don't show error messages."""
@@ -22,37 +22,16 @@ old_stderr = sys.stderr
 captured_stderr = io.StringIO()
 sys.stderr = captured_stderr
 
-# Add current directory to Python path for direct import
-import sys
-sys.path.insert(0, '/home/jinguji/xonai')
+# Load xoncc
+xontrib load xoncc
 
-# Import and load xonai directly
-import xonai.xontrib
-xonai.xontrib._load_xontrib_(__xonsh__)
+# Mock os.system to prevent actual Claude calls
+import os
+original_system = os.system
+os.system = lambda cmd: 0
 
-# Mock subprocess.Popen to prevent actual Claude calls
-import subprocess
-original_popen = subprocess.Popen
-def mock_popen(*args, **kwargs):
-    if args and 'claude' in str(args[0]):
-        class MockProcess:
-            def __init__(self):
-                self.stdout = iter(['{"type": "tokens", "count": 1}'])
-                self.stderr = iter([''])
-                self.returncode = 0
-            def wait(self):
-                return 0
-        return MockProcess()
-    return original_popen(*args, **kwargs)
-subprocess.Popen = mock_popen
-
-# Test natural language query by using xonsh subprocess syntax
-# This should trigger command_not_found and be handled by xonai
-try:
-    $(how to list files)
-except Exception:
-    # Expected - command not found should be handled by xonai
-    pass
+# Test natural language query
+$[this is a test query]
 
 # Restore stderr
 sys.stderr = old_stderr
@@ -80,13 +59,8 @@ else:
         """Test that SubprocSpec._run_binary override is working."""
         test_script = tmp_path / "test_override.xsh"
         test_script.write_text("""
-# Add current directory to Python path for direct import
-import sys
-sys.path.insert(0, '/home/jinguji/xonai')
-
-# Import and load xonai directly
-import xonai.xontrib
-xonai.xontrib._load_xontrib_(__xonsh__)
+# Load xoncc
+xontrib load xoncc
 
 # Check that override is in place
 from xonsh.procs.specs import SubprocSpec
@@ -95,7 +69,7 @@ from xonsh.procs.specs import SubprocSpec
 import inspect
 source = inspect.getsource(SubprocSpec._run_binary)
 
-if "xonai_run_binary" in source:
+if "patched_run_binary" in source:
     print("PASS: Override is in place")
     exit(0)
 else:
@@ -146,23 +120,14 @@ import time
 # Add mock claude to PATH
 os.environ["PATH"] = "{tmp_path}:" + os.environ["PATH"]
 
-# Add current directory to Python path for direct import
-import sys
-sys.path.insert(0, '/home/jinguji/xonai')
-
-# Import and load xonai directly
-import xonai.xontrib
-xonai.xontrib._load_xontrib_(__xonsh__)
+# Load xoncc
+xontrib load xoncc
 
 # Time the execution
 start = time.time()
 
 # This should not show error and should call mock claude
-# Use subprocess syntax to trigger command_not_found
-try:
-    $(test natural language query)
-except Exception:
-    pass  # Expected - handled by xonai
+test natural language query
 
 elapsed = time.time() - start
 
@@ -186,13 +151,8 @@ else:
         """Test that normal commands still work correctly."""
         test_script = tmp_path / "test_normal_commands.xsh"
         test_script.write_text("""
-# Add current directory to Python path for direct import
-import sys
-sys.path.insert(0, '/home/jinguji/xonai')
-
-# Import and load xonai directly
-import xonai.xontrib
-xonai.xontrib._load_xontrib_(__xonsh__)
+# Load xoncc
+xontrib load xoncc
 
 # Test various normal commands
 import subprocess
@@ -205,13 +165,14 @@ assert result1.strip() == "test", f"Echo failed: {result1}"
 result2 = 2 + 2
 assert result2 == 4, "Python evaluation failed"
 
-# Test 3: Command with error should still show error or return error code
-result3 = !(ls /nonexistent/directory/12345)
-if result3.returncode != 0:
-    print(f"PASS: Errors still work correctly (exit code {result3.returncode})")
-else:
-    print("FAIL: Command should have failed")
+# Test 3: Command with error should still show error
+try:
+    $(ls /nonexistent/directory/12345)
+    print("FAIL: Should have raised error")
     exit(1)
+except Exception as e:
+    # Any exception is fine - could be CalledProcessError or XonshError
+    print(f"PASS: Errors still work correctly ({type(e).__name__})")
 
 # Test 4: Piping
 result4 = $(echo "hello world" | grep world)
@@ -241,37 +202,15 @@ print("PASS: All normal commands work")
         test_script = tmp_path / f"test_{language}.xsh"
         test_script.write_text(f"""
 import os
-import subprocess
 
-# Mock subprocess.Popen to avoid actual Claude calls
-original_popen = subprocess.Popen
-def mock_popen(*args, **kwargs):
-    if args and 'claude' in args[0]:
-        # Return a mock process for Claude calls
-        class MockProcess:
-            def __init__(self):
-                self.stdout = iter([''])
-                self.stderr = iter([''])
-                self.returncode = 0
-            def wait(self):
-                return 0
-        return MockProcess()
-    return original_popen(*args, **kwargs)
-subprocess.Popen = mock_popen
+# Mock os.system to avoid actual Claude calls
+os.system = lambda cmd: 0
 
-# Add current directory to Python path for direct import
-import sys
-sys.path.insert(0, '/home/jinguji/xonai')
+# Load xoncc
+xontrib load xoncc
 
-# Import and load xonai directly
-import xonai.xontrib
-xonai.xontrib._load_xontrib_(__xonsh__)
-
-# Test query in {language} using subprocess syntax
-try:
-    $({query.replace(" ", "_")}_command_that_does_not_exist)
-except Exception:
-    pass  # Expected - handled by xonai
+# Test query in {language}
+{query}
 
 print("PASS: {language} query processed without error")
 """)

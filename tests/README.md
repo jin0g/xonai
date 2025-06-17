@@ -37,5 +37,5 @@ python3 -m pytest tests/interactive/ -v    # インタラクティブテスト
 XONAI_DUMMY=1 python3 -m pytest tests/ -v  # ダミーAI使用でのテスト
 
 # 手動テスト実行
-python3 tests/interactive/test_xoncc_manual.py
+python3 tests/interactive/test_xonai_manual.py
 ```
