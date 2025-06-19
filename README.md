@@ -1,7 +1,5 @@
 # xonai - AI Integration for Xonsh Shell
 
-## What is this?
-
 xonai seamlessly integrates AI assistants into your xonsh shell, transforming natural language into shell commands and answers. Currently supports Claude AI with a modular architecture for future AI models.
 
 ## Installation
@@ -41,3 +39,7 @@ xonai
 - [ ] Capture with `$()` syntax
 - [ ] Pipeline support for natural language queries
 - [ ] Parallel AI processing
+
+## License
+
+MIT License - Free for personal and commercial use.

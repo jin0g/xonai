@@ -1,31 +1,33 @@
-# xoncc Development Notes
+# xonai Development Notes
 
-This document contains important development notes and implementation details for xoncc.
+This document contains important development notes and implementation details for xonai.
 
 ## Architecture Overview
 
-xoncc integrates Claude AI into xonsh shell by catching command-not-found errors and passing them to Claude for interpretation.
+xonai integrates AI assistants into xonsh shell by catching command-not-found errors and passing them to AI for interpretation.
 
 ### Key Components
 
-1. **xoncc shell script** (`scripts/xoncc`)
-   - Simple bash script that launches xonsh with xoncc xontrib loaded
-   - Uses `exec xonsh` to properly handle signals (especially Ctrl-C)
+1. **xonai command** (`xonai/xonai.py`)
+   - Python entry point that launches xonsh with xonai xontrib loaded
+   - Creates temporary xonshrc file for proper xontrib loading
 
-2. **xontrib** (`xontrib/xoncc.py`)
-   - Registers `on_command_not_found` event handler
-   - Calls Claude CLI directly with auto-login handling
+2. **xontrib** (`xonai/xontrib.py`)
+   - Overrides `SubprocSpec._run_binary` to intercept command execution
+   - Uses modular AI system with BaseAI interface
    - Uses `claude --print --output-format stream-json` for real-time output
 
-3. **Claude CLI integration** (`call_claude_direct` function)
-   - Direct subprocess-based Claude CLI invocation
-   - Auto-detects login errors and triggers login process
-   - Retries original command after successful login
+3. **AI System** (`xonai/ai/`)
+   - Modular architecture with BaseAI abstract class
+   - ClaudeAI implementation using Claude CLI
+   - DummyAI for testing
+   - Response class hierarchy for structured communication
 
-4. **Real-time JSON formatter** (`xoncc/formatters/`)
-   - Modular formatter package for Claude's streaming JSON output
-   - Displays token count and tool usage during processing
-   - Handles both streaming and log output formats
+4. **Display System** (`xonai/display.py`)
+   - ResponseFormatter class for formatting AI responses
+   - Uses Rich library for terminal width handling
+   - Emoji-based display with tool indicators
+   - Smart truncation for long outputs
 
 ## Implementation Challenges & Solutions
 
@@ -57,17 +59,12 @@ xoncc integrates Claude AI into xonsh shell by catching command-not-found errors
 
 Attempting partial detection causes more harm than good.
 
-### 5. Auto-Login Implementation
-**Solution**: Use Claude CLI's behavior to detect login status:
-- `claude --print --output-format stream-json "query"` fails with "Invalid API key" when not logged in
-- Detect this error in JSON output stream
-- Automatically run `claude /exit` to trigger login process
-- Retry original command after login completes
-
-**Benefits**:
-- No complex login status checking required
-- Works with Claude CLI's natural authentication flow
-- Seamless user experience
+### 5. Command Interception
+**Solution**: Override `SubprocSpec._run_binary` method:
+- Catches `XonshError` with "command not found" message
+- Instead of raising error, passes to AI for interpretation
+- Returns dummy successful process to suppress error display
+- Preserves normal command execution for valid commands
 
 ## Design Principles
 
@@ -78,8 +75,8 @@ Attempting partial detection causes more harm than good.
 
 ## Known Limitations
 
-1. ~~Natural language queries display as command-not-found errors~~ (Fixed!)
-2. ~~Login status checking required at startup~~ (Fixed with auto-login!)
+1. Natural language queries no longer display as errors (Fixed!)
+2. No session continuity between queries (Claude CLI limitation)
 3. No context awareness (history, environment, cwd not passed to Claude)
 4. Output cannot be captured with subshell syntax `$()`
 5. No pipeline support for natural language queries
@@ -96,9 +93,8 @@ Attempting partial detection causes more harm than good.
 - [x] Shell script-based xoncc launcher
 
 ### 🚧 In Progress  
-- [ ] Ctrl-C handling improvement
-  - Basic handling works but may occasionally cause issues
-  - Testing cleaner subprocess management approaches
+- [ ] Support for additional AI models
+  - Architecture ready, need implementations
 
 ### 📋 Future Improvements
 
@@ -198,7 +194,7 @@ Attempting partial detection causes more harm than good.
 
 GitHub Actions runs only unit tests without Claude CLI:
 ```bash
-python -m pytest tests/test_setup_claude.py tests/test_formatters_*.py tests/test_xoncc_simple.py -v
+python -m pytest tests/unit/ -v
 ```
 
 ### Local Testing with Claude CLI
@@ -210,8 +206,8 @@ make test
 # Test with actual Claude CLI (requires login)
 make test-cc
 
-# Run specific Claude CLI tests
-python -m pytest tests/test_claude_cli_integration.py -v
+# Run specific integration tests
+python -m pytest tests/integration/ -v
 
 # Run tests with specific markers
 python -m pytest -m "claude_cli" -v
@@ -227,12 +223,120 @@ python -m pytest -m "not claude_cli" -v
 
 ### Clean xontrib Implementation (Current)
 - Use only official xonsh event system (`on_command_not_found`)
-- Direct Claude CLI subprocess integration
+- Override of `SubprocSpec._run_binary` for command interception
+- Modular AI system with pluggable backends
 - Smart command filtering to skip common typos
-- Auto-login handling with error detection and retry
-- Functions added to xonsh context: `cc()` and `claude()`
+- Direct subprocess integration with AI backends
 
 ### Signal Handling
 - Shell scripts with `exec` provide cleanest signal handling
 - Python subprocess module can interfere with signal propagation
 - `os.system()` preserves terminal state better than `subprocess.run()`
+
+## Deployment to PyPI
+
+### Prerequisites (Using PyPI Trusted Publisher)
+
+1. Create a PyPI account at https://pypi.org/account/register/
+
+2. Configure Trusted Publisher on PyPI:
+   - Go to https://pypi.org/manage/account/publishing/
+   - Add a new pending publisher:
+     - Project name: `xonai`
+     - Repository: `jin0g/xonai`
+     - Workflow: `publish.yml`
+     - Environment: (leave blank)
+
+PyPI's Trusted Publisher uses OpenID Connect (OIDC) to authenticate GitHub Actions directly - no API tokens needed!
+
+### Deployment Process
+
+1. Update version in `pyproject.toml`
+2. Create and push a version tag:
+   ```bash
+   git tag v0.1.0
+   git push origin v0.1.0
+   ```
+3. GitHub Actions will automatically:
+   - Run tests on all platforms and Python versions
+   - Build the package
+   - Publish to PyPI
+
+### Manual Publishing (if needed)
+
+```bash
+# Install build tools
+pip install build twine
+
+# Build the package
+python -m build
+
+# Check the package
+twine check dist/*
+
+# Upload to PyPI
+twine upload dist/*
+```
+
+## Communication Protocol
+
+xonai uses a typed Response object streaming protocol for AI communication.
+AI implementations yield `Generator[Response, None, None]`.
+
+### Response Types
+
+1. **InitResponse**: Session start notification
+   - `content`: AI name (e.g., "Claude Code")
+   - `session_id`: Optional session ID
+   - `model`: Optional model name
+
+2. **MessageResponse**: Text messages from AI (streaming support)
+   - `content`: Message part or whole
+   - `content_type`: MARKDOWN by default
+
+3. **ToolUseResponse**: Tool usage notification
+   - `content`: Tool input (command, file path, etc.)
+   - `tool`: Tool name (Bash, Read, Edit, etc.)
+
+4. **ToolResultResponse**: Tool execution result
+   - `content`: Tool output
+   - `tool`: Tool name
+
+5. **ErrorResponse**: Error notification (hidden from users)
+   - `content`: Error message
+   - `error_type`: Optional error type
+
+6. **ResultResponse**: Session end with statistics
+   - `content`: Statistics (duration_ms, cost_usd, etc.)
+   - `token`: Token count
+
+### Communication Flow
+
+1. **InitResponse** → Session start
+2. **MessageResponse** → AI explanation (optional)
+3. **ToolUseResponse** → Tool usage notification
+4. **ToolResultResponse** → Tool result (optional)
+5. Repeat 3-4 as needed
+6. **MessageResponse** → Final answer
+7. **ResultResponse** → Session end
+
+### Display Rules
+
+- **InitResponse**: Show after blank line with emoji
+- **MessageResponse**: Stream continuously
+- **ToolUseResponse**: Show concisely with emoji
+- **ToolResultResponse**: Show indented summary
+- **ErrorResponse**: Hide from user
+- **ResultResponse**: Show statistics after blank line
+
+### Tool-Specific Display
+
+- **Bash** (🔧): Show command, summarize output
+- **Read** (📖): Show filename, display line count
+- **Edit/Write** (✏️): Show filename, confirm update
+- **LS** (📁): Show path, display item count
+- **Search/Grep** (🔍): Show pattern, display match count
+- **TodoRead** (📋): Show "Reading todos", display count
+- **TodoWrite** (📝): Show "Updating todos", confirm
+- **WebSearch** (🔍): Show search query
+- **WebFetch** (🌐): Show URL
