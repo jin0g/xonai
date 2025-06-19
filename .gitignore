@@ -113,6 +113,9 @@ ENV/
 env.bak/
 venv.bak/
 
+# Virtual environment (never commit)
+/venv/
+
 # Spyder project settings
 .spyderproject
 .spyproject
@@ -157,3 +160,21 @@ Desktop.ini
 
 # Claude Code session
 CC_ID
+
+# Test and debug files
+debug_xonai.py
+test_xonai_*.py
+test_xonai_*.xsh
+hello.py
+tests/interactive/test_xonai_simple*.py
+tests/interactive/test_xonai_real.py
+
+# Dummy claude executable
+tests/dummy_claude/dummy_claude
+
+# Package version files
+=0.2.0
+=13.0.0
+
+# Sandbox directory
+sandbox/

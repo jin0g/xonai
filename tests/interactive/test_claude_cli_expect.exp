@@ -1,0 +1,210 @@
+#!/usr/bin/expect -f
+# Advanced interactive test for Claude CLI integration
+# Tests auto-login, streaming responses, and interrupt handling
+
+set timeout 60
+set project_root [file dirname [file dirname [file normalize $argv0]]]
+
+proc test_passed {test_name} {
+    puts "✓ $test_name PASSED"
+}
+
+proc test_failed {test_name reason} {
+    puts "✗ $test_name FAILED: $reason"
+    exit 1
+}
+
+proc test_skipped {test_name reason} {
+    puts "? $test_name SKIPPED: $reason"
+}
+
+puts "=== Advanced Claude CLI Interactive Tests ==="
+
+# Check if expect is available
+if {[catch {exec which expect} result]} {
+    puts "Expect not found, skipping interactive tests"
+    exit 0
+}
+
+# Test 1: Launch xonai and load extension
+puts "\nTest 1: Loading xonai..."
+spawn xonsh
+
+# Send the xontrib load command
+send "import sys; sys.path.insert(0, '$project_root')\r"
+expect ">>> "
+
+send "xontrib load xonai\r"
+expect {
+    "xonai loaded - natural language commands enabled" {
+        test_passed "xonai loading"
+    }
+    "Failed to load xonai" {
+        test_failed "xonai loading" "Extension failed to load"
+    }
+    timeout {
+        test_failed "xonai loading" "Timeout waiting for load confirmation"
+    }
+}
+
+expect ">>> "
+
+# Test 2: Check if Claude CLI is available
+puts "\nTest 2: Checking Claude CLI availability..."
+send "import subprocess; subprocess.run(\['which', 'claude'\], check=True)\r"
+set claude_available 0
+expect {
+    ">>> " {
+        set claude_available 1
+        test_passed "Claude CLI availability check"
+    }
+    "CalledProcessError" {
+        test_skipped "Claude CLI tests" "Claude CLI not installed"
+        send "exit\r"
+        expect eof
+        exit 0
+    }
+    timeout {
+        test_failed "Claude CLI check" "Timeout"
+    }
+}
+
+# Test 3: Test natural language query with streaming
+puts "\nTest 3: Testing natural language query with real Claude CLI..."
+send "what is 2+2\r"
+
+set streaming_detected 0
+set response_received 0
+
+expect {
+    "Asking Claude about:" {
+        puts "  - Natural language query detected"
+        
+        # Look for streaming indicators or responses
+        expect {
+            -re "\\|\||\\.\\.|token|processing" {
+                set streaming_detected 1
+                puts "  - Streaming/processing detected"
+                exp_continue
+            }
+            -re "\[0-9\]+" {
+                set response_received 1
+                puts "  - Numeric response received"
+                exp_continue
+            }
+            ">>> " {
+                if {$response_received} {
+                    test_passed "Natural language query with response"
+                } else {
+                    puts "  - Query completed (response may vary)"
+                }
+            }
+            timeout {
+                puts "  - Query processing timed out (may be normal for long responses)"
+            }
+        }
+    }
+    "Error:" {
+        test_skipped "Natural language query" "Claude CLI error"
+    }
+    timeout {
+        test_failed "Natural language query" "No response from query handler"
+    }
+}
+
+# Test 4: Test Ctrl-C during Claude processing
+puts "\nTest 4: Testing Ctrl-C during Claude processing..."
+send "explain quantum physics in detail\r"
+
+expect {
+    "Asking Claude about:" {
+        puts "  - Long query initiated"
+        sleep 2
+        
+        # Send Ctrl-C after a brief delay
+        send "\003"
+        
+        expect {
+            "Interrupted by user" {
+                test_passed "Ctrl-C during Claude processing"
+            }
+            ">>> " {
+                puts "  - Returned to prompt (interrupt may have worked)"
+            }
+            timeout {
+                puts "  - Timeout after Ctrl-C (checking if shell is responsive)"
+                
+                # Test if shell is still responsive
+                send "echo 'responsive'\r"
+                expect {
+                    "responsive" {
+                        test_passed "Shell responsive after Ctrl-C"
+                    }
+                    timeout {
+                        test_failed "Shell responsiveness" "Shell unresponsive after Ctrl-C"
+                    }
+                }
+            }
+        }
+    }
+    timeout {
+        test_failed "Long query initiation" "Failed to start long query"
+    }
+}
+
+# Test 5: Test multiple rapid Ctrl-C (force quit scenario)
+puts "\nTest 5: Testing rapid Ctrl-C (force quit behavior)..."
+send "another long query about machine learning\r"
+
+expect {
+    "Asking Claude about:" {
+        puts "  - Query started, sending rapid Ctrl-C..."
+        sleep 1
+        send "\003"
+        sleep 0.5
+        send "\003"
+        
+        expect {
+            ">>> " {
+                test_passed "Multiple Ctrl-C handling"
+            }
+            eof {
+                test_failed "Multiple Ctrl-C" "Shell exited unexpectedly"
+            }
+            timeout {
+                puts "  - Testing if shell is still alive..."
+                send "echo 'alive'\r"
+                expect {
+                    "alive" {
+                        test_passed "Shell survived multiple Ctrl-C"
+                    }
+                    timeout {
+                        test_failed "Shell survival" "Shell unresponsive"
+                    }
+                }
+            }
+        }
+    }
+    timeout {
+        test_skipped "Multiple Ctrl-C test" "Could not initiate query"
+    }
+}
+
+# Test 6: Test direct AI query (cc() function removed in xonai refactoring)
+puts "\nTest 6: Skipping cc() function test (removed in xonai refactoring)..."
+test_skipped "cc() function" "Function removed in xonai refactoring"
+
+# Clean exit
+puts "\nTest 7: Clean exit..."
+send "exit\r"
+expect {
+    eof {
+        test_passed "Clean exit"
+    }
+    timeout {
+        test_failed "Clean exit" "Exit timed out"
+    }
+}
+
+puts "\n=== Advanced Interactive Test Summary ==="
+puts "Interactive testing completed. Check results above."

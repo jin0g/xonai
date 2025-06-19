@@ -3,13 +3,13 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "xoncc"
-version = "0.0.1"
-description = "Claude Code Wrapper for xonsh - Seamlessly integrate Claude Code into your xonsh shell"
+name = "xonai"
+version = "0.1.0"
+description = "AI integration for xonsh shell - Natural language command interpretation"
 readme = "README.md"
-# No license
+license = {text = "MIT"}
 authors = [
-    {name = "Akira", email = "xoncc@example.com"},
+    {name = "jin0g", email = "xonai@example.com"},
 ]
 keywords = ["xonsh", "xontrib", "claude", "ai", "shell"]
 classifiers = [
@@ -22,48 +22,57 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: System :: Shells",
     "Topic :: System :: System Shells",
     "Topic :: Utilities",
 ]
 requires-python = ">=3.9"
 dependencies = [
-    "xonsh>=0.13.0"
+    "xonsh>=0.13.0",
+    "rich>=13.0.0"
 ]
 
 [project.scripts]
-cc = "xoncc.cc:main"
-claude-realtime = "xoncc.realtime_json_formatter:main"
-# xoncc is provided as a shell script via setup.py
+xonai = "xonai.xonai:main"
 
 [project.entry-points."xonsh.xontribs"]
-xoncc = "xontrib.xoncc"
+xonai = "xonai.xontrib"
 
 [project.urls]
-Homepage = "https://github.com/akira/xoncc"
-Documentation = "https://github.com/akira/xoncc#readme"
-Repository = "https://github.com/akira/xoncc"
-Issues = "https://github.com/akira/xoncc/issues"
+Homepage = "https://github.com/jin0g/xonai"
+Documentation = "https://github.com/jin0g/xonai#readme"
+Repository = "https://github.com/jin0g/xonai"
+Issues = "https://github.com/jin0g/xonai/issues"
 
 [project.optional-dependencies]
+test = [
+    "pytest>=7.0",
+    "pytest-cov>=3.0",
+    "pexpect>=4.8.0",
+]
 dev = [
     "pytest>=7.0",
     "pytest-cov>=3.0",
+    "pytest-ruff>=0.1.0",
+    "pytest-mypy>=0.10.0",
     "ruff>=0.1.0",
     "black>=23.0",
     "mypy>=1.0",
+    "pexpect>=4.8.0",
+    "bandit>=1.7.0",
+    "safety>=2.3.0",
 ]
 
 [tool.setuptools]
-packages = ["xontrib", "xoncc"]
+packages = ["xonai", "xonai.ai"]
 include-package-data = true
 
 [tool.setuptools.package-data]
-xontrib = ["*.py"]
-xoncc = ["*.py", "*.sh"]
+xonai = ["*.py", "ai/*.py"]
 
 [tool.ruff]
-target-version = "py38"
+target-version = "py39"
 line-length = 100
 
 [tool.ruff.lint]
@@ -79,14 +88,14 @@ select = [
 ignore = []
 
 [tool.ruff.lint.isort]
-known-first-party = ["xontrib"]
+known-first-party = ["xonai"]
 
 [tool.black]
 line-length = 100
-target-version = ["py38"]
+target-version = ["py39"]
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.9"
 warn_return_any = true
 warn_unused_configs = true
 ignore_missing_imports = true
@@ -105,15 +114,11 @@ markers = [
 addopts = [
     "-ra",
     "--strict-markers",
-    "--cov=xontrib",
-    "--cov-report=term-missing",
-    "--cov-report=html",
-    "-m not claude_cli",  # Skip Claude CLI tests by default
 ]
 
 [tool.coverage.run]
 branch = true
-source = ["xontrib"]
+source = ["xonai"]
 
 [tool.coverage.report]
 exclude_lines = [

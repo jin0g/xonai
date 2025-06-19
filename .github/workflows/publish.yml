@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        python-version: ['3.9', '3.10', '3.11', '3.12']
     
     steps:
     - uses: actions/checkout@v4
@@ -33,12 +33,12 @@ jobs:
     
     - name: Lint with ruff
       run: |
-        python -m ruff check xontrib/ xoncc/ tests/
-        python -m ruff format --check xontrib/ xoncc/ tests/
+        python -m ruff check xonai/ tests/
+        python -m ruff format --check xonai/ tests/
     
     - name: Run tests
       run: |
-        python -m pytest tests/ -v --cov=xontrib --cov=xoncc --cov-report=term-missing
+        python -m pytest tests/ -v --cov=xonai --cov-report=term-missing
     
     - name: Check package build
       run: |

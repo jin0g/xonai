@@ -97,10 +97,10 @@ for response in server.generate_response(query):
     return mock_claude
 
 
-def test_xoncc_with_mock_claude():
-    """Test xoncc with a mock Claude that simulates real behavior."""
+def test_xonai_with_mock_claude():
+    """Test xonai with a mock Claude that simulates real behavior."""
 
-    print("=== Testing xoncc with Mock Claude ===\n")
+    print("=== Testing xonai with Mock Claude ===\n")
 
     # Create mock claude executable
     mock_claude_wrapper = Path("/tmp/claude")
@@ -111,7 +111,7 @@ exec python3 {__file__} mock-claude-server "$@"
     mock_claude_wrapper.chmod(0o755)
 
     # Create test xonsh script
-    test_script = Path("/tmp/test_xoncc_mock.xsh")
+    test_script = Path("/tmp/test_xonai_mock.xsh")
     test_script.write_text("""
 import os
 import time
@@ -119,8 +119,8 @@ import time
 # Add mock claude to PATH
 os.environ["PATH"] = "/tmp:" + os.environ["PATH"]
 
-print("Loading xoncc with mock Claude...")
-xontrib load xoncc
+print("Loading xonai with mock Claude...")
+xontrib load xonai
 
 print("\\nTest 1: English query")
 print("Query: 'how to list files'")
@@ -200,6 +200,6 @@ if __name__ == "__main__":
         print("\n" + "-" * 50)
         print("\n✓ Mock server test complete")
 
-        # Test with xoncc
+        # Test with xonai
         print("\n" + "=" * 60 + "\n")
-        test_xoncc_with_mock_claude()
+        test_xonai_with_mock_claude()
