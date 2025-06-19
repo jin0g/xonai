@@ -1,21 +1,21 @@
 # xonai - Xonsh Shell on AI Integrations
 
-xonai seamlessly integrates AI assistants into your xonsh shell, transforming natural language into shell commands and answers. Currently supports Claude AI with a modular architecture for future AI models.
+Transform your xonsh shell with natural language commands. Ask questions, get help, and execute tasks using plain English - xonai seamlessly integrates AI assistance into your terminal workflow.
 
 ## Prerequisites
 
 ### AI Agent Setup
 xonai requires an AI agent to function. Currently supported:
 
-- **Claude Code** (Primary): [Installation Guide](https://docs.anthropic.com/en/docs/claude-code/getting-started)
+- **Claude Code**: [Installation Guide](https://docs.anthropic.com/en/docs/claude-code/getting-started)
 
-**Note**: While xonai is designed with a modular architecture to support multiple AI models in the future, Claude Code is currently the only supported AI agent.
+**Note**: While xonai is designed to support multiple AI models, Claude Code is currently the only available integration.
 
 ### System Requirements
 - Python 3.9+
-- The AI agent must be installed and properly configured (logged in)
+- AI agent installed and configured (logged in)
 
-**Note**: xonsh shell will be automatically installed as a dependency.
+The xonsh shell will be automatically installed as a dependency.
 
 ## Installation
 
@@ -25,27 +25,42 @@ pip install xonai
 
 ## Usage
 
-Launch with xonai command:
+Launch xonai to start an AI-enhanced shell:
+
 ```bash
 xonai
 ```
 
-## Status & Roadmap
+Once running, you can use natural language commands alongside regular shell commands:
 
-### ✅ Current Features
-- [x] Natural language commands in xonsh shell
-- [x] Real-time AI responses with progress display
-- [x] Emoji-rich output formatting with tool indicators
-- [x] Modular AI architecture (supports multiple AI models)
+```bash
+# Regular shell commands work as usual
+ls -la
+cd /home/user
 
-### 📋 Planned Features
-- [ ] Markdown syntax highlighting and colorization
-- [ ] Detailed tool results display
-- [ ] Session continuity across queries
-- [ ] Capture with `$()` syntax
-- [ ] Pipeline support for natural language queries
-- [ ] Parallel AI processing
+# Natural language queries are processed by AI
+how do I find large files
+what's the current git status
+create a python script to sort a list
+```
+
+## Features
+
+### ✅ Available Now
+- **Natural Language Commands**: Ask questions and get executable answers
+- **Real-time AI Responses**: See AI processing with live progress indicators
+- **Rich Terminal Output**: Emoji-based formatting with clear tool indicators
+- **Seamless Integration**: Works alongside all your regular shell commands
+
+### 🔜 Coming Soon
+- **Multiple AI Models**: Support for additional AI providers
+- **Session Memory**: Maintain context across multiple queries
+- **Command Capture**: Use AI responses in scripts with `$(ai_query)` syntax
+- **Pipeline Support**: Pipe AI responses to other commands
+- **Parallel Processing**: Run AI queries in background while using shell
+
+For detailed development information, see [DEVELOPMENT.md](DEVELOPMENT.md).
 
 ## License
 
-MIT License - Free for personal and commercial use.
+MIT License
