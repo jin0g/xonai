@@ -22,14 +22,14 @@ def xonsh_executable():
     xonsh_path = shutil.which("xonsh")
     if xonsh_path:
         return xonsh_path
-    
+
     # If not found, try to construct from current Python executable
     # This works when xonsh is installed in the same environment as pytest
     python_bin_dir = Path(sys.executable).parent
     xonsh_in_venv = python_bin_dir / "xonsh"
     if xonsh_in_venv.exists():
         return str(xonsh_in_venv)
-    
+
     # Last resort - assume it's xonsh and let subprocess fail with clear error
     return "xonsh"
 
@@ -41,14 +41,14 @@ def xonai_executable():
     xonai_path = shutil.which("xonai")
     if xonai_path:
         return xonai_path
-    
+
     # If not found, try to construct from current Python executable
     # This works when xonai is installed in the same environment as pytest
     python_bin_dir = Path(sys.executable).parent
     xonai_in_venv = python_bin_dir / "xonai"
     if xonai_in_venv.exists():
         return str(xonai_in_venv)
-    
+
     # Last resort - assume it's xonai and let subprocess fail with clear error
     return "xonai"
 
