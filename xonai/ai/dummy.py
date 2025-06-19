@@ -1,7 +1,7 @@
 """Dummy AI implementation for testing."""
 
 import time
-from typing import Generator
+from collections.abc import Generator
 
 from .base import (
     BaseAI,

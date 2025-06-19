@@ -129,7 +129,6 @@ class ResponseFormatter:
             # Generic tool format
             return f"🔧 {tool_name}: {content}"
 
-
     def _format_tool_result(self, response: ToolResultResponse) -> str:
         """Format tool results - simplified output."""
         content = response.content
@@ -140,11 +139,11 @@ class ResponseFormatter:
 
         # Simplify output based on tool
         if tool == "Read":
-            line_count = content.count('\n') + 1
+            line_count = content.count("\n") + 1
             return f"  → Read {line_count} lines"
         elif tool == "LS":
             # Count files/directories
-            items = content.strip().split('\n')
+            items = content.strip().split("\n")
             return f"  → Found {len(items)} items"
         elif tool in ["Edit", "MultiEdit"]:
             # Show edit summary
@@ -153,7 +152,7 @@ class ResponseFormatter:
             return "  → File written"
         elif tool == "Bash":
             # Show first line of output if short, otherwise just indicate output
-            lines = content.strip().split('\n')
+            lines = content.strip().split("\n")
             if len(lines) == 1 and len(lines[0]) < 60:
                 return f"  → {lines[0]}"
             elif len(lines) > 1:
@@ -162,7 +161,7 @@ class ResponseFormatter:
                 return "  → Command completed"
         elif tool in ["Glob", "Grep"]:
             # Count matches
-            matches = content.strip().split('\n') if content.strip() else []
+            matches = content.strip().split("\n") if content.strip() else []
             if matches:
                 return f"  → Found {len(matches)} matches"
             else:
@@ -170,6 +169,7 @@ class ResponseFormatter:
         elif tool == "TodoRead":
             # Count todos
             import json
+
             try:
                 todos = json.loads(content)
                 return f"  → {len(todos)} todos"
@@ -179,7 +179,7 @@ class ResponseFormatter:
             return "  → Todos updated"
         else:
             # For other tools, show brief summary
-            lines = content.strip().split('\n')
+            lines = content.strip().split("\n")
             if len(lines) == 1 and len(lines[0]) < 80:
                 return f"  → {lines[0]}"
             else:

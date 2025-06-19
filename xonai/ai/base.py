@@ -1,9 +1,10 @@
 """Base classes for AI model implementations."""
 
 from abc import ABC, abstractmethod
+from collections.abc import Generator
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Generator, Optional
+from typing import Optional
 
 
 class ContentType(Enum):

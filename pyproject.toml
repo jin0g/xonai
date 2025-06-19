@@ -114,9 +114,6 @@ markers = [
 addopts = [
     "-ra",
     "--strict-markers",
-    "--cov=xonai",
-    "--cov-report=term-missing",
-    "--cov-report=html",
 ]
 
 [tool.coverage.run]

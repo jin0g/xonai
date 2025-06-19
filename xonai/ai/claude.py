@@ -5,7 +5,8 @@ import os
 import shutil
 import subprocess
 import sys
-from typing import Generator, Optional
+from collections.abc import Generator
+from typing import Optional
 
 from .base import (
     BaseAI,
@@ -183,14 +184,12 @@ class ClaudeAI(BaseAI):
                     if tool_name == "Bash":
                         content = tool_input.get("command", "")
                     elif tool_name in ["Read", "NotebookRead"]:
-                        content = (
-                            tool_input.get("file_path", "")
-                            or tool_input.get("notebook_path", "")
+                        content = tool_input.get("file_path", "") or tool_input.get(
+                            "notebook_path", ""
                         )
                     elif tool_name in ["Edit", "Write", "MultiEdit", "NotebookEdit"]:
-                        content = (
-                            tool_input.get("file_path", "")
-                            or tool_input.get("notebook_path", "")
+                        content = tool_input.get("file_path", "") or tool_input.get(
+                            "notebook_path", ""
                         )
                     elif tool_name == "WebSearch":
                         content = tool_input.get("query", "")
