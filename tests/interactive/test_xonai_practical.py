@@ -174,7 +174,7 @@ print("PASS: AI responded to natural language")
         finally:
             os.unlink(script_path)
 
-    def test_ctrl_c_multiple_times(self):
+    def test_ctrl_c_multiple_times(self, xonai_executable):
         """Test that xonai doesn't exit even after pressing Ctrl-C 5 times."""
         if not HAS_PEXPECT:
             pytest.skip("pexpect not available")

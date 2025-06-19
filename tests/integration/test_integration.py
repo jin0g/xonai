@@ -9,7 +9,7 @@ import pytest
 class TestXonaiIntegration:
     """Integration tests for xonai."""
 
-    def test_no_error_message_displayed(self, tmp_path):
+    def test_no_error_message_displayed(self, tmp_path, xonsh_executable):
         """Test that natural language queries don't show error messages."""
         # Create a test script
         test_script = tmp_path / "test_no_errors.xsh"
@@ -70,13 +70,13 @@ else:
 
         # Run the test
         result = subprocess.run(
-            ["xonsh", str(test_script)], capture_output=True, text=True, timeout=10
+            [xonsh_executable, str(test_script)], capture_output=True, text=True, timeout=10
         )
 
         assert result.returncode == 0
         assert "PASS" in result.stdout
 
-    def test_function_override_works(self, tmp_path):
+    def test_function_override_works(self, tmp_path, xonsh_executable):
         """Test that SubprocSpec._run_binary override is working."""
         test_script = tmp_path / "test_override.xsh"
         test_script.write_text("""
@@ -104,13 +104,13 @@ else:
 """)
 
         result = subprocess.run(
-            ["xonsh", str(test_script)], capture_output=True, text=True, timeout=10
+            [xonsh_executable, str(test_script)], capture_output=True, text=True, timeout=10
         )
 
         assert result.returncode == 0
         assert "PASS" in result.stdout
 
-    def test_mock_claude_streaming(self, tmp_path):
+    def test_mock_claude_streaming(self, tmp_path, xonsh_executable):
         """Test with a mock Claude that simulates streaming behavior."""
         # Create mock claude script
         mock_claude = tmp_path / "claude"
@@ -174,7 +174,7 @@ else:
 """)
 
         result = subprocess.run(
-            ["xonsh", str(test_script)], capture_output=True, text=True, timeout=10
+            [xonsh_executable, str(test_script)], capture_output=True, text=True, timeout=10
         )
 
         # Should complete successfully
@@ -182,7 +182,7 @@ else:
         # Should not show error
         assert "command not found" not in result.stderr
 
-    def test_normal_commands_unaffected(self, tmp_path):
+    def test_normal_commands_unaffected(self, tmp_path, xonsh_executable):
         """Test that normal commands still work correctly."""
         test_script = tmp_path / "test_normal_commands.xsh"
         test_script.write_text("""
@@ -221,7 +221,7 @@ print("PASS: All normal commands work")
 """)
 
         result = subprocess.run(
-            ["xonsh", str(test_script)], capture_output=True, text=True, timeout=10
+            [xonsh_executable, str(test_script)], capture_output=True, text=True, timeout=10
         )
 
         assert result.returncode == 0
@@ -236,7 +236,7 @@ print("PASS: All normal commands work")
             ("как список файлов", "Russian"),
         ],
     )
-    def test_multilingual_queries(self, tmp_path, query, language):
+    def test_multilingual_queries(self, tmp_path, query, language, xonsh_executable):
         """Test that queries in different languages work without errors."""
         test_script = tmp_path / f"test_{language}.xsh"
         test_script.write_text(f"""
@@ -277,7 +277,7 @@ print("PASS: {language} query processed without error")
 """)
 
         result = subprocess.run(
-            ["xonsh", str(test_script)], capture_output=True, text=True, timeout=10
+            [xonsh_executable, str(test_script)], capture_output=True, text=True, timeout=10
         )
 
         assert result.returncode == 0

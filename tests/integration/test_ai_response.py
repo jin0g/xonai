@@ -9,7 +9,7 @@ import pytest
 class TestAIResponse:
     """Test AI response functionality."""
 
-    def test_ai_integration_no_errors(self, tmp_path):
+    def test_ai_integration_no_errors(self, tmp_path, xonsh_executable):
         """Test that AI queries don't show command not found errors."""
         # Create simple mock claude
         mock_claude = tmp_path / "claude"
@@ -49,7 +49,7 @@ print("PASS: AI integration test")
 """)
 
         result = subprocess.run(
-            ["xonsh", str(test_script)], capture_output=True, text=True, timeout=10
+            [xonsh_executable, str(test_script)], capture_output=True, text=True, timeout=10
         )
 
         assert result.returncode == 0
@@ -57,7 +57,7 @@ print("PASS: AI integration test")
         # Most importantly: should NOT contain command not found error
         assert "command not found" not in result.stderr.lower()
 
-    def test_function_override_prevents_errors(self, tmp_path):
+    def test_function_override_prevents_errors(self, tmp_path, xonsh_executable):
         """Test that function override prevents command not found errors."""
         test_script = tmp_path / "test_override.xsh"
         test_script.write_text("""
@@ -93,7 +93,7 @@ print("PASS: Function override working")
 """)
 
         result = subprocess.run(
-            ["xonsh", str(test_script)], capture_output=True, text=True, timeout=10
+            [xonsh_executable, str(test_script)], capture_output=True, text=True, timeout=10
         )
 
         assert result.returncode == 0
@@ -101,7 +101,7 @@ print("PASS: Function override working")
         # Should NOT show command not found error
         assert "command not found" not in result.stderr.lower()
 
-    def test_normal_commands_still_work(self, tmp_path):
+    def test_normal_commands_still_work(self, tmp_path, xonsh_executable):
         """Test that normal commands are not affected by the override."""
         test_script = tmp_path / "test_normal_commands.xsh"
         test_script.write_text("""
@@ -127,7 +127,7 @@ except subprocess.CalledProcessError:
 """)
 
         result = subprocess.run(
-            ["xonsh", str(test_script)], capture_output=True, text=True, timeout=10
+            [xonsh_executable, str(test_script)], capture_output=True, text=True, timeout=10
         )
 
         assert result.returncode == 0
@@ -136,7 +136,7 @@ except subprocess.CalledProcessError:
     @pytest.mark.skipif(
         "not hasattr(subprocess, 'run')"
     )  # Skip if testing environment lacks subprocess
-    def test_real_claude_integration(self, tmp_path):
+    def test_real_claude_integration(self, tmp_path, xonsh_executable):
         """Test integration with real Claude CLI if available."""
         # Check if real Claude CLI is available
         try:
@@ -167,7 +167,7 @@ print("PASS: Real Claude integration test")
 """)
 
         result = subprocess.run(
-            ["xonsh", str(test_script)], capture_output=True, text=True, timeout=30
+            [xonsh_executable, str(test_script)], capture_output=True, text=True, timeout=30
         )
 
         assert result.returncode == 0
