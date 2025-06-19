@@ -281,3 +281,43 @@ AI implementations yield `Generator[Response, None, None]`.
 - **TodoWrite** (📝): Show "Updating todos", confirm
 - **WebSearch** (🔍): Show search query
 - **WebFetch** (🌐): Show URL
+
+## Release Preparation (2025-06-19)
+
+### Current Status
+xonai is now ready for its first PyPI release (v0.1.0). All critical issues have been resolved and deployment infrastructure is in place.
+
+### Major Fixes Completed
+1. **Subprocess Deadlock Fix**: Resolved critical issue where complex queries (like "このプロジェクトの概要を把握して下さい") would hang due to stderr buffer blocking. Fixed by implementing background thread for stderr reading.
+
+2. **Deployment Configuration**: 
+   - Configured PyPI Trusted Publisher for secure, token-free deployment
+   - Fixed publish.yml to use tag-based triggers
+   - Removed deprecated release.yml workflow
+   - Added Python 3.13 support
+
+3. **Documentation & Project Management**:
+   - Translated all documentation to English
+   - Created comprehensive GitHub Issues (10 total) for roadmap tracking
+   - Simplified CLAUDE.md by moving detailed TODOs to Issues
+   - Updated README.md with proper title and structure
+
+4. **Testing Improvements**:
+   - Added tests for complex query scenarios
+   - Added subprocess handling tests with deadlock simulation
+   - Improved test coverage for edge cases
+
+### Current Release Process
+1. PR #21 contains all release preparations
+2. After merge, create `v0.1.0` tag to trigger automatic PyPI deployment
+3. GitHub Actions will run tests and publish to PyPI using Trusted Publisher
+
+### Next Steps
+- Merge release preparation PR
+- Create release tag for v0.1.0
+- Monitor deployment and PyPI publication
+- Begin work on planned features (see GitHub Issues)
+
+---
+
+**Note**: This document should be updated regularly to reflect the current state of the project, major changes, and development progress. Always keep this section current with latest status and important updates.

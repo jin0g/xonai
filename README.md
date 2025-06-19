@@ -2,14 +2,26 @@
 
 xonai seamlessly integrates AI assistants into your xonsh shell, transforming natural language into shell commands and answers. Currently supports Claude AI with a modular architecture for future AI models.
 
+## Prerequisites
+
+### AI Agent Setup
+xonai requires an AI agent to function. Currently supported:
+
+- **Claude Code** (Primary): [Installation Guide](https://docs.anthropic.com/en/docs/claude-code/getting-started)
+
+**Note**: While xonai is designed with a modular architecture to support multiple AI models in the future, Claude Code is currently the only supported AI agent.
+
+### System Requirements
+- Python 3.9+
+- The AI agent must be installed and properly configured (logged in)
+
+**Note**: xonsh shell will be automatically installed as a dependency.
+
 ## Installation
 
-1. Install Claude Code: [Installation Guide](https://docs.anthropic.com/en/docs/claude-code/getting-started)
-
-2. Install xonai:
-   ```bash
-   pip install xonai
-   ```
+```bash
+pip install xonai
+```
 
 ## Usage
 
@@ -17,12 +29,6 @@ Launch with xonai command:
 ```bash
 xonai
 ```
-
-## Requirements
-
-- Python 3.9+
-- Claude Code (logged in)
-- xonsh shell
 
 ## Status & Roadmap
 
