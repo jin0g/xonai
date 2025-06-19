@@ -98,66 +98,7 @@ Attempting partial detection causes more harm than good.
 
 ### 📋 Future Improvements
 
-#### Output Capture Support
-- [ ] Enable output capture from Claude responses
-  - **Goal**: Support `$(claude_query)` syntax to capture AI responses in variables
-  - **Implementation**: Modify Claude CLI call to return output instead of printing
-  - **Challenges**: Need to distinguish between interactive and capture modes
-  - **Example**: `files=$(how do I list large files)` should work
-
-#### Pipeline Support
-- [ ] Add pipeline support for natural language queries
-  - **Goal**: Allow piping AI responses to other commands
-  - **Implementation**: Make Claude output pipeable by treating it as command output
-  - **Example**: `how to list files | grep python` should pipe AI response to grep
-  - **Challenges**: Distinguishing when user wants to pipe vs when they're asking about pipes
-
-#### Shell Context Awareness
-- [ ] Pass shell context (history, env, cwd) to AI
-  - **Goal**: Make Claude aware of current shell state for better responses
-  - **Implementation**: Pass current directory, recent commands, and environment to Claude
-  - **Context to include**:
-    - Current working directory
-    - Recent command history (last 10 commands)
-    - Key environment variables (PATH, etc.)
-    - Git repository status if applicable
-  - **Privacy considerations**: Allow users to opt-out of context sharing
-
-#### Parallel Processing & Advanced Control
-- [ ] AI processing and shell execution in parallel
-  - **Goal**: Run AI and shell commands simultaneously without blocking
-  - **Implementation**: Background AI processing with foreground shell availability
-  - **User Interface**:
-    - Ctrl+C once: Interrupt AI with y/n confirmation prompt
-    - Ctrl+C twice: Force quit everything
-    - Status indicators for background AI processing
-  
-- [ ] Add queue for AI instructions
-  - **Goal**: Queue multiple AI requests or enable parallel AI executions
-  - **Implementation**: Background job management system
-  - **Features**:
-    - Queue multiple queries: `cc-queue "query1" "query2" "query3"`
-    - Status checking: `cc-status` to see running/queued jobs
-    - Result retrieval: `cc-result <job-id>` to get specific results
-
-#### UI/UX Improvements
-- [ ] Fix status line display during AI processing
-  - **Goal**: Clean, non-intrusive progress indicators
-  - **Implementation**: Single-line status updates without interfering with output
-  - **Features**:
-    - Token count display
-    - Processing time
-    - Cost estimation
-    - Progress bar for long operations
-
-#### Compatibility & Edge Cases
-- [ ] Handle fullscreen mode during parallel execution
-  - **Goal**: Graceful handling of fullscreen applications during AI processing
-  - **Challenges**: How to display AI results when vim/emacs is running
-  - **Solutions to explore**:
-    - Notification system
-    - Background completion with retrieval commands
-    - Terminal multiplexer integration
+See [GitHub Issues](https://github.com/jin0g/xonai/issues) for detailed roadmap and feature requests.
 
 ## Development Tips
 
@@ -252,9 +193,9 @@ PyPI's Trusted Publisher uses OpenID Connect (OIDC) to authenticate GitHub Actio
 ### Deployment Process
 
 1. Update version in `pyproject.toml`
-2. Create and push a version tag:
+2. Create and push to version branch:
    ```bash
-   git tag v0.1.0
+   git checkout -b v0.1.0
    git push origin v0.1.0
    ```
 3. GitHub Actions will automatically:
@@ -340,3 +281,43 @@ AI implementations yield `Generator[Response, None, None]`.
 - **TodoWrite** (📝): Show "Updating todos", confirm
 - **WebSearch** (🔍): Show search query
 - **WebFetch** (🌐): Show URL
+
+## Release Preparation (2025-06-19)
+
+### Current Status
+xonai is now ready for its first PyPI release (v0.1.0). All critical issues have been resolved and deployment infrastructure is in place.
+
+### Major Fixes Completed
+1. **Subprocess Deadlock Fix**: Resolved critical issue where complex queries (like "このプロジェクトの概要を把握して下さい") would hang due to stderr buffer blocking. Fixed by implementing background thread for stderr reading.
+
+2. **Deployment Configuration**: 
+   - Configured PyPI Trusted Publisher for secure, token-free deployment
+   - Fixed publish.yml to use tag-based triggers
+   - Removed deprecated release.yml workflow
+   - Added Python 3.13 support
+
+3. **Documentation & Project Management**:
+   - Translated all documentation to English
+   - Created comprehensive GitHub Issues (10 total) for roadmap tracking
+   - Simplified CLAUDE.md by moving detailed TODOs to Issues
+   - Updated README.md with proper title and structure
+
+4. **Testing Improvements**:
+   - Added tests for complex query scenarios
+   - Added subprocess handling tests with deadlock simulation
+   - Improved test coverage for edge cases
+
+### Current Release Process
+1. PR #21 contains all release preparations
+2. After merge, create `v0.1.0` tag to trigger automatic PyPI deployment
+3. GitHub Actions will run tests and publish to PyPI using Trusted Publisher
+
+### Next Steps
+- Merge release preparation PR
+- Create release tag for v0.1.0
+- Monitor deployment and PyPI publication
+- Begin work on planned features (see GitHub Issues)
+
+---
+
+**Note**: This document should be updated regularly to reflect the current state of the project, major changes, and development progress. Always keep this section current with latest status and important updates.
