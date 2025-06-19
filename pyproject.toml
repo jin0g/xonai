@@ -22,6 +22,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: System :: Shells",
     "Topic :: System :: System Shells",
     "Topic :: Utilities",
@@ -56,12 +57,15 @@ test = [
     "mypy>=1.0",
 ]
 
-[project.scripts]
-xonai = "xonai.xonai:main"
-
 [tool.setuptools]
 packages = ["xonai", "xonai.ai"]
 include-package-data = true
+
+[tool.setuptools.package-data]
+xonai = ["*.py"]
+
+[project.scripts]
+xonai = "xonai.xonai:main"
 
 [tool.ruff]
 target-version = "py38"
