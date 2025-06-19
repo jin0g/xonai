@@ -3,10 +3,10 @@ name: Test and Publish to PyPI
 on:
   push:
     branches:
-      - v0.0.1
+      - v0.1.0
   pull_request:
     branches:
-      - v0.0.1
+      - v0.1.0
 
 permissions:
   contents: read
@@ -48,8 +48,8 @@ jobs:
   publish:
     needs: test
     runs-on: ubuntu-latest
-    # Only run on push to v0.0.1 branch, not on PRs
-    if: github.event_name == 'push' && github.ref == 'refs/heads/v0.0.1'
+    # Only run on push to v0.1.0 branch, not on PRs
+    if: github.event_name == 'push' && github.ref == 'refs/heads/v0.1.0'
     
     permissions:
       id-token: write  # Required for OIDC publishing

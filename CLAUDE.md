@@ -252,9 +252,9 @@ PyPI's Trusted Publisher uses OpenID Connect (OIDC) to authenticate GitHub Actio
 ### Deployment Process
 
 1. Update version in `pyproject.toml`
-2. Create and push a version tag:
+2. Create and push to version branch:
    ```bash
-   git tag v0.1.0
+   git checkout -b v0.1.0
    git push origin v0.1.0
    ```
 3. GitHub Actions will automatically:
