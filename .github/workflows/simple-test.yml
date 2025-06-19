@@ -34,3 +34,13 @@ jobs:
     - name: Check import
       run: |
         python -c "import xonai; print('Import successful')"
+        
+    - name: Try install with test extras
+      run: |
+        echo "=== Attempting pip install -e .[test] ==="
+        pip install -e ".[test]" -v 2>&1 | tail -50
+        echo "Exit code: $?"
+        
+    - name: Check what was installed
+      run: |
+        pip list
