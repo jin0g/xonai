@@ -30,23 +30,15 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -e ".[test]"
+        echo "=== Installation completed ==="
+        pip list | grep -E "(xonai|pytest|ruff|mypy)"
     
-    - name: Debug environment
+    - name: Verify installation
       run: |
         echo "=== Python version ==="
         python --version
-        echo "=== Current directory ==="
-        pwd
-        echo "=== Directory contents ==="
-        ls -la
-        echo "=== xonai directory ==="
-        ls -la xonai/
-        echo "=== tests directory ==="
-        ls -la tests/
-        echo "=== Python path ==="
-        python -c "import sys; print('\n'.join(sys.path))"
         echo "=== Check if xonai can be imported ==="
-        python -c "import xonai; print('xonai imported successfully')" || echo "Failed to import xonai"
+        python -c "import xonai; print(f'xonai {xonai.__version__} imported successfully')"
         
     - name: Lint with ruff
       run: |
@@ -75,3 +67,4 @@ jobs:
       with:
         file: ./coverage.xml
         fail_ci_if_error: false
+      continue-on-error: true
