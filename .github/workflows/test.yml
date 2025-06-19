@@ -16,7 +16,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
-        # Test on all major platforms with Python 3.9+
     
     steps:
     - uses: actions/checkout@v4
@@ -29,24 +28,15 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -e ".[test]"
-        echo "=== Installation completed ==="
-        pip list | grep -E "(xonai|pytest|ruff|mypy)"
+        pip install -e ".[dev]"
     
-    - name: Verify installation
-      run: |
-        echo "=== Python version ==="
-        python --version
-        echo "=== Check if xonai can be imported ==="
-        python -c "import xonai; print(f'xonai {xonai.__version__} imported successfully')"
-        
     - name: Lint with ruff
       run: |
-        echo "=== Checking ruff version ==="
-        python -m ruff --version
-        echo "=== Running ruff check ==="
+        echo "Files to be checked:"
+        find xonai/ tests/ -name "*.py" -type f | head -20
+        echo "Running ruff check..."
         python -m ruff check xonai/ tests/
-        echo "=== Running ruff format check ==="
+        echo "Running ruff format check..."
         python -m ruff format --check xonai/ tests/
     
     - name: Type check with mypy
@@ -62,9 +52,8 @@ jobs:
         SKIP_CLAUDE_INTEGRATION: "true"
     
     - name: Upload coverage to Codecov
-      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
       uses: codecov/codecov-action@v3
       with:
         file: ./coverage.xml
         fail_ci_if_error: false
-      continue-on-error: true
