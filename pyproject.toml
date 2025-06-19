@@ -5,11 +5,11 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "xonai"
 version = "0.1.0"
-description = "AI integration for xonsh shell - Natural language command interpretation"
+description = "Xonsh Shell on AI Integrations - Natural language command interpretation"
 readme = "README.md"
-license = {text = "MIT"}
+license = "MIT"
 authors = [
-    {name = "jin0g", email = "xonai@example.com"},
+    {name = "jin0g"},
 ]
 keywords = ["xonsh", "xontrib", "claude", "ai", "shell"]
 classifiers = [

@@ -2,11 +2,8 @@ name: Test and Publish to PyPI
 
 on:
   push:
-    branches:
-      - v0.1.0
-  pull_request:
-    branches:
-      - v0.1.0
+    tags:
+      - 'v*.*.*'
 
 permissions:
   contents: read
@@ -16,13 +13,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.9', '3.10', '3.11', '3.12']
+        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
     
     steps:
     - uses: actions/checkout@v4
     
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
     
@@ -38,7 +35,7 @@ jobs:
     
     - name: Run tests
       run: |
-        python -m pytest tests/ -v --cov=xonai --cov-report=term-missing
+        python -m pytest tests/unit/ -v --cov=xonai --cov-report=term-missing
     
     - name: Check package build
       run: |
@@ -48,8 +45,8 @@ jobs:
   publish:
     needs: test
     runs-on: ubuntu-latest
-    # Only run on push to v0.1.0 branch, not on PRs
-    if: github.event_name == 'push' && github.ref == 'refs/heads/v0.1.0'
+    # Only run on tag push
+    if: startsWith(github.ref, 'refs/tags/')
     
     permissions:
       id-token: write  # Required for OIDC publishing
@@ -58,7 +55,7 @@ jobs:
     - uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11'
     

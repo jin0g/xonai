@@ -1,41 +1,41 @@
-# xonai テスト構造
+# xonai Test Structure
 
-## ディレクトリ構成
+## Directory Structure
 
 ```
 tests/
-├── unit/              # 単体テスト
-├── integration/       # 結合テスト  
-├── interactive/       # インタラクティブテスト
-└── conftest.py        # 共通テスト設定
+├── unit/              # Unit tests
+├── integration/       # Integration tests  
+├── interactive/       # Interactive tests
+└── conftest.py        # Common test configuration
 ```
 
-## テストタイプ別説明
+## Test Types
 
-### 🧪 単体テスト (`tests/unit/`)
-個別コンポーネントの機能をテストします。
+### 🧪 Unit Tests (`tests/unit/`)
+Test individual component functionality.
 
-### 🔗 結合テスト (`tests/integration/`)
-xonsh環境での統合動作をテストします。
+### 🔗 Integration Tests (`tests/integration/`)
+Test integrated behavior in xonsh environment.
 
-### 🎯 インタラクティブテスト (`tests/interactive/`)
-手動・自動でのユーザーインタラクション体験をテストします。
+### 🎯 Interactive Tests (`tests/interactive/`)
+Test manual and automated user interaction experiences.
 
-### 🤖 ダミーAIテスト
-XONAI_DUMMY=1 環境変数を設定することで、実際のAI APIを使わずダミー実装でのテストを行います。
+### 🤖 Dummy AI Tests
+Set XONAI_DUMMY=1 environment variable to test with dummy implementation without actual AI API.
 
-## テスト実行方法
+## Running Tests
 
 ```bash
-# 全テスト実行
+# Run all tests
 make test
 
-# カテゴリ別実行
-python3 -m pytest tests/unit/ -v           # 単体テスト
-python3 -m pytest tests/integration/ -v    # 結合テスト
-python3 -m pytest tests/interactive/ -v    # インタラクティブテスト
-XONAI_DUMMY=1 python3 -m pytest tests/ -v  # ダミーAI使用でのテスト
+# Run by category
+python3 -m pytest tests/unit/ -v           # Unit tests
+python3 -m pytest tests/integration/ -v    # Integration tests
+python3 -m pytest tests/interactive/ -v    # Interactive tests
+XONAI_DUMMY=1 python3 -m pytest tests/ -v  # Test with dummy AI
 
-# 手動テスト実行
+# Run manual test
 python3 tests/interactive/test_xonai_manual.py
 ```

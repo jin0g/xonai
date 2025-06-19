@@ -5,6 +5,7 @@ import os
 import shutil
 import subprocess
 import sys
+import threading
 from collections.abc import Generator
 from typing import Optional
 
@@ -73,8 +74,18 @@ class ClaudeAI(BaseAI):
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
-                bufsize=0,  # Unbuffered for real-time output
+                bufsize=1,  # Line-buffered for better handling
             )
+
+            # Collect stderr in background thread to avoid deadlock
+            stderr_lines = []
+            def read_stderr():
+                if proc.stderr:
+                    for line in proc.stderr:
+                        stderr_lines.append(line)
+            
+            stderr_thread = threading.Thread(target=read_stderr)
+            stderr_thread.start()
 
             # Process streaming output
             if proc.stdout:
@@ -92,12 +103,15 @@ class ClaudeAI(BaseAI):
                         # Skip invalid JSON lines
                         continue
 
+            # Wait for stderr thread to complete
+            stderr_thread.join()
+
             # Check for stderr output (errors)
-            if proc.stderr:
-                stderr_output = proc.stderr.read()
+            if stderr_lines:
+                stderr_output = "".join(stderr_lines).strip()
                 if stderr_output:
                     # Check for specific error types
-                    error_text = stderr_output.strip()
+                    error_text = stderr_output
                     error_type = None
                     if "not logged in" in error_text.lower():
                         error_type = ErrorType.NOT_LOGGED_IN
@@ -111,7 +125,8 @@ class ClaudeAI(BaseAI):
 
             # Wait for completion and check exit code
             exit_code = proc.wait()
-            if exit_code != 0:
+            if exit_code != 0 and not stderr_lines:
+                # Only yield generic error if no stderr was captured
                 yield ErrorResponse(
                     content=f"Claude CLI exited with code {exit_code}",
                     error_type=None,  # Unexpected error
@@ -125,6 +140,9 @@ class ClaudeAI(BaseAI):
                     proc.wait(timeout=1)
                 except subprocess.TimeoutExpired:
                     proc.kill()
+            # Wait for stderr thread if it was started
+            if "stderr_thread" in locals() and stderr_thread.is_alive():
+                stderr_thread.join(timeout=1)
             yield ErrorResponse(content="Interrupted by user", error_type=None)
         except Exception as e:
             yield ErrorResponse(

@@ -1,4 +1,4 @@
-# xonai - AI Integration for Xonsh Shell
+# xonai - Xonsh Shell on AI Integrations
 
 xonai seamlessly integrates AI assistants into your xonsh shell, transforming natural language into shell commands and answers. Currently supports Claude AI with a modular architecture for future AI models.
 

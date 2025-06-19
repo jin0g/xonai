@@ -98,66 +98,7 @@ Attempting partial detection causes more harm than good.
 
 ### 📋 Future Improvements
 
-#### Output Capture Support
-- [ ] Enable output capture from Claude responses
-  - **Goal**: Support `$(claude_query)` syntax to capture AI responses in variables
-  - **Implementation**: Modify Claude CLI call to return output instead of printing
-  - **Challenges**: Need to distinguish between interactive and capture modes
-  - **Example**: `files=$(how do I list large files)` should work
-
-#### Pipeline Support
-- [ ] Add pipeline support for natural language queries
-  - **Goal**: Allow piping AI responses to other commands
-  - **Implementation**: Make Claude output pipeable by treating it as command output
-  - **Example**: `how to list files | grep python` should pipe AI response to grep
-  - **Challenges**: Distinguishing when user wants to pipe vs when they're asking about pipes
-
-#### Shell Context Awareness
-- [ ] Pass shell context (history, env, cwd) to AI
-  - **Goal**: Make Claude aware of current shell state for better responses
-  - **Implementation**: Pass current directory, recent commands, and environment to Claude
-  - **Context to include**:
-    - Current working directory
-    - Recent command history (last 10 commands)
-    - Key environment variables (PATH, etc.)
-    - Git repository status if applicable
-  - **Privacy considerations**: Allow users to opt-out of context sharing
-
-#### Parallel Processing & Advanced Control
-- [ ] AI processing and shell execution in parallel
-  - **Goal**: Run AI and shell commands simultaneously without blocking
-  - **Implementation**: Background AI processing with foreground shell availability
-  - **User Interface**:
-    - Ctrl+C once: Interrupt AI with y/n confirmation prompt
-    - Ctrl+C twice: Force quit everything
-    - Status indicators for background AI processing
-  
-- [ ] Add queue for AI instructions
-  - **Goal**: Queue multiple AI requests or enable parallel AI executions
-  - **Implementation**: Background job management system
-  - **Features**:
-    - Queue multiple queries: `cc-queue "query1" "query2" "query3"`
-    - Status checking: `cc-status` to see running/queued jobs
-    - Result retrieval: `cc-result <job-id>` to get specific results
-
-#### UI/UX Improvements
-- [ ] Fix status line display during AI processing
-  - **Goal**: Clean, non-intrusive progress indicators
-  - **Implementation**: Single-line status updates without interfering with output
-  - **Features**:
-    - Token count display
-    - Processing time
-    - Cost estimation
-    - Progress bar for long operations
-
-#### Compatibility & Edge Cases
-- [ ] Handle fullscreen mode during parallel execution
-  - **Goal**: Graceful handling of fullscreen applications during AI processing
-  - **Challenges**: How to display AI results when vim/emacs is running
-  - **Solutions to explore**:
-    - Notification system
-    - Background completion with retrieval commands
-    - Terminal multiplexer integration
+See [GitHub Issues](https://github.com/jin0g/xonai/issues) for detailed roadmap and feature requests.
 
 ## Development Tips
 
