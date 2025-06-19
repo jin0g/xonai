@@ -227,7 +227,7 @@ class TestDisplayCoverage:
         formatter.format(response)
 
         captured = capsys.readouterr()
-        assert captured.out == "\n🚀 Test AI: model=test-model\n"
+        assert captured.out == "🚀 Test AI: model=test-model\n"
 
     def test_result_response_without_stats(self, capsys):
         """Test result response without statistics."""

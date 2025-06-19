@@ -9,7 +9,7 @@ if [ -f "$HOME/.xonshrc" ]; then
     echo "source $HOME/.xonshrc" >> "$temp_rc"
 fi
 
-# Add xonai loading
+# Load xonai xontrib
 echo "xontrib load xonai" >> "$temp_rc"
 
 # Launch xonsh with custom rc file using exec

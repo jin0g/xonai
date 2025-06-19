@@ -40,10 +40,9 @@ class ResponseFormatter:
                 print(output, end="", flush=True)
                 self._last_was_newline = output.endswith("\n")
             elif isinstance(response, InitResponse):
-                # Init gets a blank line before
+                # Init on new line if needed
                 if not self._last_was_newline:
                     print()
-                print()  # Blank line before init
                 print(output)
                 self._last_was_newline = True
             elif isinstance(response, ResultResponse):

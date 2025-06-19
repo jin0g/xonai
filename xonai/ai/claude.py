@@ -186,9 +186,9 @@ class ClaudeAI(BaseAI):
 
             for item in content:
                 if item.get("type") == "text":
-                    text = item.get("text", "").strip()
-                    if text:
-                        # Add newline before assistant messages
+                    text = item.get("text", "")
+                    if text.strip():  # Check if non-empty after stripping
+                        # Add newline before assistant messages, but preserve original text
                         return MessageResponse(content=f"\n{text}")
                 elif item.get("type") == "tool_use":
                     # Tool usage
@@ -240,6 +240,9 @@ class ClaudeAI(BaseAI):
             for item in content:
                 if item.get("type") == "tool_result":
                     result_content = item.get("content", "")
+                    # Handle case where content might be a list
+                    if isinstance(result_content, list):
+                        result_content = "\n".join(str(line) for line in result_content)
                     return ToolResultResponse(
                         content=result_content,
                         tool=self._last_tool or "",
