@@ -79,11 +79,12 @@ class ClaudeAI(BaseAI):
 
             # Collect stderr in background thread to avoid deadlock
             stderr_lines = []
+
             def read_stderr():
                 if proc.stderr:
                     for line in proc.stderr:
                         stderr_lines.append(line)
-            
+
             stderr_thread = threading.Thread(target=read_stderr)
             stderr_thread.start()
 
