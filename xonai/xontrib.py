@@ -26,9 +26,7 @@ def _load_xontrib_(xsh, **kwargs):
 
         def xonai_run_binary(self, kwargs):
             """Override _run_binary to intercept command-not-found errors."""
-            return xonai_run_binary_handler(
-                SubprocSpec._xonai_original_run_binary, self, kwargs
-            )
+            return xonai_run_binary_handler(SubprocSpec._xonai_original_run_binary, self, kwargs)
 
         # Apply the override
         SubprocSpec._run_binary = xonai_run_binary

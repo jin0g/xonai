@@ -48,9 +48,7 @@ def create_dummy_process():
     else:
         cmd = ["true"]
 
-    return subprocess.Popen(
-        cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-    )
+    return subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
 def xonai_run_binary_handler(original_method, subprocess_spec, kwargs):
