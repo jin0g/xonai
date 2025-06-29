@@ -7,10 +7,10 @@ Xonai is an AI integration shell that allows you to use natural language command
 ### System Requirements
 - Python 3.9+
 
-### AI Agent Setup
-Currently supported:
+### AI Agent Setup & Login (any)
 - Claude Code
-- Gemini CLI  
+- Gemini CLI
+- ChatGPT CodeX
 - Aider
 
 ## Installation
@@ -27,13 +27,13 @@ xonai
 
 ```bash
 # Regular shell commands work as usual
-ls -la
-cd /home/user
+@ ls -la
+@ cd /home/user
 
 # Natural language queries are processed by AI
-how do I find large files
-what's the current git status
-create a python script to sort a list
+@ how do I find large files
+@ what's the current git status
+@ create a python script to sort a list
 ```
 
 ## License
