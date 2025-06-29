@@ -78,10 +78,7 @@ class TestDisplayEdgeCases:
         formatter = ResponseFormatter()
 
         # Japanese text in tool result
-        response = ToolResultResponse(
-            content="ファイル一覧:\n• test.py\n• 日本語.txt",
-            tool="LS"
-        )
+        response = ToolResultResponse(content="ファイル一覧:\n• test.py\n• 日本語.txt", tool="LS")
         formatter.format(response)
 
         output = capsys.readouterr().out
@@ -98,8 +95,7 @@ class TestDisplayEdgeCases:
 
         # Long command should be truncated
         response = ToolUseResponse(
-            content="very long command with many arguments that exceeds terminal width",
-            tool="Bash"
+            content="very long command with many arguments that exceeds terminal width", tool="Bash"
         )
         formatter.format(response)
 

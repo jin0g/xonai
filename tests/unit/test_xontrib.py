@@ -13,6 +13,7 @@ class TestXontrib:
 
     def test_load_xontrib_already_loaded(self):
         """Test error when xontrib is already loaded."""
+
         # Create a real dict for ctx since Mock might not work with hasattr
         class MockXsh:
             def __init__(self):
@@ -27,6 +28,7 @@ class TestXontrib:
     @patch("xonai.xontrib.xonai_run_binary_handler")
     def test_load_xontrib_success(self, mock_handler):
         """Test successful xontrib loading."""
+
         # Create a real dict for ctx
         class MockXsh:
             def __init__(self):
@@ -53,6 +55,7 @@ class TestXontrib:
 
     def test_load_xontrib_import_error(self):
         """Test error handling when import fails."""
+
         class MockXsh:
             def __init__(self):
                 self.ctx = {}
@@ -69,6 +72,7 @@ class TestXontrib:
 
     def test_load_xontrib_sets_context(self):
         """Test that context is properly set."""
+
         class MockXsh:
             def __init__(self):
                 self.ctx = {}

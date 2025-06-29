@@ -69,6 +69,7 @@ def xonai_run_binary_handler(original_method, subprocess_spec, kwargs):
         # Fallback for test environments without xonsh
         class MockXonshError(Exception):
             pass
+
         xt = type("MockXonshTools", (), {"XonshError": MockXonshError})()
 
     try:

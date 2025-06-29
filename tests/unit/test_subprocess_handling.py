@@ -157,15 +157,14 @@ class TestSubprocessHandling:
         # Mock subprocess to return tool result with list content
         stdout_lines = [
             json.dumps({"type": "system", "subtype": "init", "model": "test"}),
-            json.dumps({
-                "type": "user",
-                "message": {
-                    "content": [{
-                        "type": "tool_result",
-                        "content": ["line1", "line2", "line3"]
-                    }]
+            json.dumps(
+                {
+                    "type": "user",
+                    "message": {
+                        "content": [{"type": "tool_result", "content": ["line1", "line2", "line3"]}]
+                    },
                 }
-            }),
+            ),
             json.dumps({"type": "result", "usage": {"total_tokens": 10}}),
         ]
 

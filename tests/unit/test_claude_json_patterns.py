@@ -27,29 +27,29 @@ class TestClaudeJSONPatterns:
         # Complex nested structure - Claude sends these as separate messages
         stdout_lines = [
             json.dumps({"type": "system", "subtype": "init", "model": "claude-3"}),
-            json.dumps({
-                "type": "assistant",
-                "message": {
-                    "content": [
-                        {"type": "text", "text": "Let me help you."}
-                    ]
+            json.dumps(
+                {
+                    "type": "assistant",
+                    "message": {"content": [{"type": "text", "text": "Let me help you."}]},
                 }
-            }),
-            json.dumps({
-                "type": "assistant",
-                "message": {
-                    "content": [
-                        {
-                            "type": "tool_use",
-                            "name": "Bash",
-                            "input": {
-                                "command": "ls -la | grep test",
-                                "description": "List test files"
+            ),
+            json.dumps(
+                {
+                    "type": "assistant",
+                    "message": {
+                        "content": [
+                            {
+                                "type": "tool_use",
+                                "name": "Bash",
+                                "input": {
+                                    "command": "ls -la | grep test",
+                                    "description": "List test files",
+                                },
                             }
-                        }
-                    ]
+                        ]
+                    },
                 }
-            }),
+            ),
             json.dumps({"type": "result", "usage": {"total_tokens": 50}}),
         ]
 
@@ -142,15 +142,9 @@ class TestClaudeJSONPatterns:
 
         stdout_lines = [
             json.dumps({"type": "system", "subtype": "init"}),
-            json.dumps({
-                "type": "user",
-                "message": {
-                    "content": [{
-                        "type": "tool_result",
-                        "content": ""
-                    }]
-                }
-            }),
+            json.dumps(
+                {"type": "user", "message": {"content": [{"type": "tool_result", "content": ""}]}}
+            ),
             json.dumps({"type": "result", "usage": {"total_tokens": 10}}),
         ]
 
@@ -176,41 +170,46 @@ class TestClaudeJSONPatterns:
         stdout_lines = [
             json.dumps({"type": "system", "subtype": "init"}),
             # First tool
-            json.dumps({
-                "type": "assistant",
-                "message": {
-                    "content": [{
-                        "type": "tool_use",
-                        "name": "Read",
-                        "input": {"file_path": "/test.txt"}
-                    }]
+            json.dumps(
+                {
+                    "type": "assistant",
+                    "message": {
+                        "content": [
+                            {
+                                "type": "tool_use",
+                                "name": "Read",
+                                "input": {"file_path": "/test.txt"},
+                            }
+                        ]
+                    },
                 }
-            }),
+            ),
             # Tool result
-            json.dumps({
-                "type": "user",
-                "message": {
-                    "content": [{
-                        "type": "tool_result",
-                        "content": "file contents"
-                    }]
+            json.dumps(
+                {
+                    "type": "user",
+                    "message": {"content": [{"type": "tool_result", "content": "file contents"}]},
                 }
-            }),
+            ),
             # Second tool
-            json.dumps({
-                "type": "assistant",
-                "message": {
-                    "content": [{
-                        "type": "tool_use",
-                        "name": "Edit",
-                        "input": {
-                            "file_path": "/test.txt",
-                            "old_string": "old",
-                            "new_string": "new"
-                        }
-                    }]
+            json.dumps(
+                {
+                    "type": "assistant",
+                    "message": {
+                        "content": [
+                            {
+                                "type": "tool_use",
+                                "name": "Edit",
+                                "input": {
+                                    "file_path": "/test.txt",
+                                    "old_string": "old",
+                                    "new_string": "new",
+                                },
+                            }
+                        ]
+                    },
                 }
-            }),
+            ),
             json.dumps({"type": "result", "usage": {"total_tokens": 100}}),
         ]
 

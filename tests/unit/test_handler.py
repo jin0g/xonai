@@ -14,6 +14,7 @@ except ImportError:
     # Create mock for test environment
     class MockXonshError(Exception):
         pass
+
     xt = type("MockXonshTools", (), {"XonshError": MockXonshError})()
 
 from xonai.ai.base import InitResponse, MessageResponse

@@ -26,71 +26,46 @@ class TestXonaiDeadlock:
             "type": "system",
             "subtype": "init",
             "session_id": "test-123",
-            "model": "claude-3"
+            "model": "claude-3",
         }
         content_data = {
             "type": "content_block_delta",
-            "delta": {"text": "プロジェクトの概要を把握します。\n"}
+            "delta": {"text": "プロジェクトの概要を把握します。\n"},
         }
         ls_tool = {
             "type": "assistant",
-            "message": {
-                "content": [{
-                    "type": "tool_use",
-                    "name": "LS",
-                    "input": {"path": "/"}
-                }]
-            }
+            "message": {"content": [{"type": "tool_use", "name": "LS", "input": {"path": "/"}}]},
         }
         ls_result = {
             "type": "user",
             "message": {
-                "content": [{
-                    "type": "tool_result",
-                    "content": "file1.py\nfile2.py\nREADME.md"
-                }]
-            }
+                "content": [{"type": "tool_result", "content": "file1.py\nfile2.py\nREADME.md"}]
+            },
         }
         read_tool = {
             "type": "assistant",
             "message": {
-                "content": [{
-                    "type": "tool_use",
-                    "name": "Read",
-                    "input": {"file_path": "README.md"}
-                }]
-            }
+                "content": [
+                    {"type": "tool_use", "name": "Read", "input": {"file_path": "README.md"}}
+                ]
+            },
         }
         read_result = {
             "type": "user",
-            "message": {
-                "content": [{
-                    "type": "tool_result",
-                    "content": "# Project Title\n" * 100
-                }]
-            }
+            "message": {"content": [{"type": "tool_result", "content": "# Project Title\n" * 100}]},
         }
         grep_tool = {
             "type": "assistant",
             "message": {
-                "content": [{
-                    "type": "tool_use",
-                    "name": "Grep",
-                    "input": {"pattern": "class", "path": "."}
-                }]
-            }
+                "content": [
+                    {"type": "tool_use", "name": "Grep", "input": {"pattern": "class", "path": "."}}
+                ]
+            },
         }
-        grep_result_content = "\n".join([
-            f"file{i}.py: class Example{i}" for i in range(50)
-        ])
+        grep_result_content = "\n".join([f"file{i}.py: class Example{i}" for i in range(50)])
         grep_result = {
             "type": "user",
-            "message": {
-                "content": [{
-                    "type": "tool_result",
-                    "content": grep_result_content
-                }]
-            }
+            "message": {"content": [{"type": "tool_result", "content": grep_result_content}]},
         }
         text1 = {"type": "content_block_delta", "delta": {"text": "このプロジェクトは..."}}
         text2 = {"type": "content_block_delta", "delta": {"text": "Pythonで書かれた..."}}
@@ -98,7 +73,7 @@ class TestXonaiDeadlock:
             "type": "result",
             "usage": {"input_tokens": 5000, "output_tokens": 2000},
             "duration_ms": 5000,
-            "cost_usd": 0.05
+            "cost_usd": 0.05,
         }
 
         stdout_lines = [
@@ -116,11 +91,14 @@ class TestXonaiDeadlock:
         ]
 
         # Simulate stderr output (warnings, debug info, etc.)
-        stderr_content = "\n".join([
-            "Warning: Large context size",
-            "Debug: Processing file analysis",
-            "Info: Using model claude-3",
-        ] * 10)  # Repeat to simulate verbose output
+        stderr_content = "\n".join(
+            [
+                "Warning: Large context size",
+                "Debug: Processing file analysis",
+                "Info: Using model claude-3",
+            ]
+            * 10
+        )  # Repeat to simulate verbose output
 
         mock_proc.stdout = iter([line + "\n" for line in stdout_lines])
         mock_proc.stderr = iter(stderr_content.split("\n"))
@@ -135,15 +113,15 @@ class TestXonaiDeadlock:
         assert len(responses) > 0
 
         # Verify proper handling
-        init_found = any(r.content == "Claude Code" for r in responses if hasattr(r, 'content'))
+        init_found = any(r.content == "Claude Code" for r in responses if hasattr(r, "content"))
         assert init_found, "Should have init response"
 
         # Should have tool uses
-        tool_uses = [r for r in responses if hasattr(r, 'tool')]
+        tool_uses = [r for r in responses if hasattr(r, "tool")]
         assert len(tool_uses) > 0, "Should have tool uses"
 
         # Should have final result
-        result_found = any(hasattr(r, 'token') for r in responses)
+        result_found = any(hasattr(r, "token") for r in responses)
         assert result_found, "Should have result with token count"
 
     @patch("xonai.ai.claude.subprocess.Popen")
@@ -175,14 +153,14 @@ class TestXonaiDeadlock:
         # Stdout with lots of data
         stdout_data = []
         for i in range(100):
-            stdout_data.append(json.dumps({
-                "type": "content_block_delta",
-                "delta": {"text": f"Processing item {i}...\n"}
-            }))
-        stdout_data.append(json.dumps({
-            "type": "result",
-            "usage": {"input_tokens": 1000, "output_tokens": 500}
-        }))
+            stdout_data.append(
+                json.dumps(
+                    {"type": "content_block_delta", "delta": {"text": f"Processing item {i}...\n"}}
+                )
+            )
+        stdout_data.append(
+            json.dumps({"type": "result", "usage": {"input_tokens": 1000, "output_tokens": 500}})
+        )
 
         mock_proc.stdout = iter([line + "\n" for line in stdout_data])
         mock_proc.stderr = BlockingStderr()
@@ -194,8 +172,7 @@ class TestXonaiDeadlock:
 
         # Should have processed all stdout
         message_count = sum(
-            1 for r in responses
-            if hasattr(r, 'content') and "Processing item" in str(r.content)
+            1 for r in responses if hasattr(r, "content") and "Processing item" in str(r.content)
         )
         assert message_count == 100, f"Should have all 100 messages, got {message_count}"
 
@@ -203,4 +180,3 @@ class TestXonaiDeadlock:
         errors = [r for r in responses if r.__class__.__name__ == "ErrorResponse"]
         assert len(errors) > 0, "Should have error from stderr"
         assert "Error:" in errors[0].content
-
