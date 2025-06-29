@@ -1,323 +1,197 @@
-# xonai Development Notes
+# xonai - AI Assistant Instructions
 
-This document contains important development notes and implementation details for xonai.
+This document contains instructions and context for AI assistants working on the xonai project.
 
-## Architecture Overview
+## Project Overview
 
-xonai integrates AI assistants into xonsh shell by catching command-not-found errors and passing them to AI for interpretation.
+xonai is a tool that integrates AI assistants into xonsh shell by intercepting command-not-found errors and routing them to AI for natural language interpretation.
 
-### Key Components
+### Core Architecture
 
-1. **xonai command** (`xonai/xonai.py`)
-   - Python entry point that launches xonsh with xonai xontrib loaded
-   - Creates temporary xonshrc file for proper xontrib loading
+- **Entry Point**: `xonai/xonai.py` launches xonsh with xontrib loaded
+- **Xontrib**: `xonai/xontrib.py` overrides `SubprocSpec._run_binary` for command interception
+- **AI System**: Modular design in `xonai/ai/` with BaseAI interface
+- **Display**: `xonai/display.py` handles formatted terminal output
 
-2. **xontrib** (`xonai/xontrib.py`)
-   - Overrides `SubprocSpec._run_binary` to intercept command execution
-   - Uses modular AI system with BaseAI interface
-   - Uses `claude --print --output-format stream-json` for real-time output
+## Critical Implementation Details for AI Development
 
-3. **AI System** (`xonai/ai/`)
-   - Modular architecture with BaseAI abstract class
-   - ClaudeAI implementation using Claude CLI
-   - DummyAI for testing
-   - Response class hierarchy for structured communication
+### Command Interception Strategy
 
-4. **Display System** (`xonai/display.py`)
-   - ResponseFormatter class for formatting AI responses
-   - Uses Rich library for terminal width handling
-   - Emoji-based display with tool indicators
-   - Smart truncation for long outputs
+**IMPORTANT**: The core functionality uses `SubprocSpec._run_binary` override approach:
 
-## Implementation Challenges & Solutions
+1. Catches `XonshError` with "command not found" message
+2. Routes unrecognized commands to AI instead of showing error
+3. Returns dummy successful process to suppress error display
+4. Preserves normal xonsh command execution
 
-### 1. Ctrl-C Handling
-**Problem**: Initial Python-based xoncc wrapper caused shell to exit on Ctrl-C.
-
-**Solution**: Switched to shell script with `exec xonsh`, allowing xonsh to handle signals naturally.
-
-### 2. Error Status Display
-**Problem**: Natural language queries show as command-not-found errors.
-
-**Attempted Solutions**:
-- `on_transform_command` - Caused issues with normal command execution
-- Pattern matching for natural language detection - Imperfect and harmful (rejected by user)
-- Function override of `SubprocSpec._run_binary` - Successfully implemented!
-
-**Solution**: Override `SubprocSpec._run_binary` to catch `XonshError` with "command not found" message and return a dummy successful process instead of raising the error. This completely eliminates error messages for natural language queries while preserving normal functionality.
-
-### 3. Real-time Output
-**Problem**: Initial implementation buffered output.
-
-**Solution**: Using `os.system()` instead of `subprocess.run()` for better real-time display.
-
-### 4. Natural Language Detection
-**Important Decision**: Avoid pattern matching approaches. It's impossible to perfectly distinguish between:
+**DO NOT attempt natural language detection** - it's impossible to reliably distinguish between:
 - Natural language queries
 - Valid commands/syntax
 - User-defined variables
 
-Attempting partial detection causes more harm than good.
+### Signal Handling Requirements
 
-### 5. Command Interception
-**Solution**: Override `SubprocSpec._run_binary` method:
-- Catches `XonshError` with "command not found" message
-- Instead of raising error, passes to AI for interpretation
-- Returns dummy successful process to suppress error display
-- Preserves normal command execution for valid commands
+- Use shell script launcher with `exec xonsh` for proper Ctrl-C handling
+- Avoid Python subprocess interference with signal propagation
+- Use `os.system()` over `subprocess.run()` for better terminal state preservation
 
-## Design Principles
+### Subprocess Deadlock Prevention
 
-1. **Simplicity**: Keep the implementation as simple as possible
-2. **Non-intrusive**: Don't interfere with normal xonsh operation
+**CRITICAL**: Complex queries can cause deadlock due to stderr buffer blocking.
+**Solution**: Use background thread for stderr reading (already implemented in `handler.py`)
+
+## Development Principles for AI
+
+1. **Simplicity First**: Keep implementation as simple as possible
+2. **Non-intrusive**: Never interfere with normal xonsh operation
 3. **Transparency**: Let xonsh handle what it does best
 4. **Reliability**: Prefer working with limitations over complex workarounds
+5. **Modularity**: Support multiple AI providers through abstract interfaces
 
-## Known Limitations
+## Current Limitations (Do Not Try to "Fix")
 
-1. Natural language queries no longer display as errors (Fixed!)
-2. No session continuity between queries (Claude CLI limitation)
-3. No context awareness (history, environment, cwd not passed to Claude)
-4. Output cannot be captured with subshell syntax `$()`
-5. No pipeline support for natural language queries
-6. Python import usage not supported (xonsh-only design)
+1. No session continuity between queries (Claude CLI architectural limitation)
+2. No context awareness (history, environment, cwd not passed to Claude)
+3. Output cannot be captured with subshell syntax `$()`
+4. No pipeline support for natural language queries
+5. Python import usage not supported (xonsh-only design)
 
-## Development Roadmap
+**These are intentional design decisions - do not attempt workarounds.**
 
-### ✅ Completed Features
-- [x] AI processing recognized as normal command (not error)
-- [x] Real-time display of AI processing progress with token counts
-- [x] Clean output formatting for both streaming and log modes
-- [x] Code organized into functional modules with comprehensive tests
-- [x] Auto-login handling for Claude CLI
-- [x] Shell script-based xoncc launcher
+## Development Commands for AI
 
-### 🚧 In Progress  
-- [ ] Support for additional AI models
-  - Architecture ready, need implementations
-
-### 📋 Future Improvements
-
-See [GitHub Issues](https://github.com/jin0g/xonai/issues) for detailed roadmap and feature requests.
-
-## Development Tips
-
-1. Always run `make all` after making changes
-2. Test Ctrl-C handling thoroughly
-3. Test with both English and Japanese queries
-4. Avoid complex pattern matching logic
-5. Keep xonsh's event system behavior in mind
-
-## Testing Strategy
-
-### Test Categories
-
-1. **Unit Tests** (`make test`)
-   - No external dependencies
-   - Mock Claude CLI interactions
-   - Run in CI/CD environment
-   - Fast execution
-
-2. **Integration Tests** (`make test-cc`)
-   - Require Claude CLI installation
-   - Test actual AI interactions
-   - Local development only
-   - May take longer to execute
-
-
-### Test Markers
-
-- `@pytest.mark.claude_cli`: Tests requiring Claude CLI
-- `@pytest.mark.integration`: Integration tests (may be slow)
-- `@pytest.mark.slow`: Slow-running tests
-
-### CI/CD Testing
-
-GitHub Actions runs only unit tests without Claude CLI:
+### Essential Commands
 ```bash
-python -m pytest tests/unit/ -v
-```
+# Full development cycle
+make all
 
-### Local Testing with Claude CLI
-
-```bash
 # Test basic functionality
 make test
 
-# Test with actual Claude CLI (requires login)
+# Test with actual Claude CLI (requires Claude login)
 make test-cc
 
-# Run specific integration tests
-python -m pytest tests/integration/ -v
-
-# Run tests with specific markers
-python -m pytest -m "claude_cli" -v
-python -m pytest -m "not claude_cli" -v
+# Linting and formatting
+make lint
+make format
 ```
 
-## Technical Details
+### Testing Requirements
 
-### xonsh Event System
-- `on_command_not_found` only fires in interactive mode
-- Events cannot prevent subsequent error handling
-- Event handlers should be lightweight
+See `tests/README.md` for comprehensive testing documentation. Key requirements:
+- Unit tests must pass before any code changes
+- Test both English and Japanese natural language queries
+- Verify Ctrl-C handling and subprocess deadlock prevention
 
-### Clean xontrib Implementation (Current)
-- Use only official xonsh event system (`on_command_not_found`)
-- Override of `SubprocSpec._run_binary` for command interception
-- Modular AI system with pluggable backends
-- Smart command filtering to skip common typos
-- Direct subprocess integration with AI backends
+## Prohibited Actions for AI
 
-### Signal Handling
-- Shell scripts with `exec` provide cleanest signal handling
-- Python subprocess module can interfere with signal propagation
-- `os.system()` preserves terminal state better than `subprocess.run()`
+- **NEVER** attempt natural language detection patterns
+- **NEVER** modify xonsh event system beyond current approach  
+- **NEVER** create complex workarounds for stated limitations
+- **NEVER** interfere with normal shell command execution
+- **NEVER** commit secrets or API keys
+- **NEVER** create GitHub workflows without explicit instruction
 
-## Deployment to PyPI
+## File Structure for AI Reference
 
-### Prerequisites (Using PyPI Trusted Publisher)
-
-1. Create a PyPI account at https://pypi.org/account/register/
-
-2. Configure Trusted Publisher on PyPI:
-   - Go to https://pypi.org/manage/account/publishing/
-   - Add a new pending publisher:
-     - Project name: `xonai`
-     - Repository: `jin0g/xonai`
-     - Workflow: `publish.yml`
-     - Environment: (leave blank)
-
-PyPI's Trusted Publisher uses OpenID Connect (OIDC) to authenticate GitHub Actions directly - no API tokens needed!
-
-### Deployment Process
-
-1. Update version in `pyproject.toml`
-2. Create and push to version branch:
-   ```bash
-   git checkout -b v0.1.0
-   git push origin v0.1.0
-   ```
-3. GitHub Actions will automatically:
-   - Run tests on all platforms and Python versions
-   - Build the package
-   - Publish to PyPI
-
-### Manual Publishing (if needed)
-
-```bash
-# Install build tools
-pip install build twine
-
-# Build the package
-python -m build
-
-# Check the package
-twine check dist/*
-
-# Upload to PyPI
-twine upload dist/*
+```
+xonai/
+├── xonai/
+│   ├── __init__.py         # Package initialization
+│   ├── xonai.py           # Entry point (launches xonsh)
+│   ├── xontrib.py         # Xonsh integration (command interception)
+│   ├── handler.py         # Command handling and AI routing
+│   ├── display.py         # Terminal output formatting
+│   └── ai/
+│       ├── __init__.py    # AI provider registry
+│       ├── base.py        # BaseAI abstract interface
+│       ├── claude.py      # Claude CLI implementation
+│       └── dummy.py       # Testing implementation
+├── tests/                 # See tests/README.md for details
+├── bin/xonai              # Shell script launcher
+├── pyproject.toml         # Package configuration
+├── README.md              # User documentation
+├── DEVELOPMENT.md         # Developer documentation
+└── CLAUDE.md              # This file (AI instructions)
 ```
 
-## Communication Protocol
+## AI Response Protocol
 
-xonai uses a typed Response object streaming protocol for AI communication.
-AI implementations yield `Generator[Response, None, None]`.
+xonai uses structured Response objects for AI communication:
 
 ### Response Types
-
-1. **InitResponse**: Session start notification
-   - `content`: AI name (e.g., "Claude Code")
-   - `session_id`: Optional session ID
-   - `model`: Optional model name
-
-2. **MessageResponse**: Text messages from AI (streaming support)
-   - `content`: Message part or whole
-   - `content_type`: MARKDOWN by default
-
-3. **ToolUseResponse**: Tool usage notification
-   - `content`: Tool input (command, file path, etc.)
-   - `tool`: Tool name (Bash, Read, Edit, etc.)
-
+1. **InitResponse**: Session start (`content`: AI name, `session_id`, `model`)
+2. **MessageResponse**: AI text messages (supports streaming)
+3. **ToolUseResponse**: Tool usage notification (`tool`, `content`)
 4. **ToolResultResponse**: Tool execution result
-   - `content`: Tool output
-   - `tool`: Tool name
-
 5. **ErrorResponse**: Error notification (hidden from users)
-   - `content`: Error message
-   - `error_type`: Optional error type
-
 6. **ResultResponse**: Session end with statistics
-   - `content`: Statistics (duration_ms, cost_usd, etc.)
-   - `token`: Token count
 
-### Communication Flow
-
-1. **InitResponse** → Session start
-2. **MessageResponse** → AI explanation (optional)
-3. **ToolUseResponse** → Tool usage notification
-4. **ToolResultResponse** → Tool result (optional)
-5. Repeat 3-4 as needed
-6. **MessageResponse** → Final answer
-7. **ResultResponse** → Session end
-
-### Display Rules
-
+### Display Rules for AI
 - **InitResponse**: Show after blank line with emoji
 - **MessageResponse**: Stream continuously
-- **ToolUseResponse**: Show concisely with emoji
+- **ToolUseResponse**: Show concisely with emoji (🔧📖✏️📁🔍📋📝🌐)
 - **ToolResultResponse**: Show indented summary
 - **ErrorResponse**: Hide from user
 - **ResultResponse**: Show statistics after blank line
 
-### Tool-Specific Display
+## Deployment Information for AI
 
-- **Bash** (🔧): Show command, summarize output
-- **Read** (📖): Show filename, display line count
-- **Edit/Write** (✏️): Show filename, confirm update
-- **LS** (📁): Show path, display item count
-- **Search/Grep** (🔍): Show pattern, display match count
-- **TodoRead** (📋): Show "Reading todos", display count
-- **TodoWrite** (📝): Show "Updating todos", confirm
-- **WebSearch** (🔍): Show search query
-- **WebFetch** (🌐): Show URL
+### PyPI Publishing Process
+1. Update version in `pyproject.toml`
+2. Create version tag: `git tag v0.1.0 && git push origin v0.1.0`
+3. GitHub Actions automatically publishes to PyPI
 
-## Release Preparation (2025-06-19)
+**DO NOT** manually publish unless explicitly instructed.
 
-### Current Status
-xonai is now ready for its first PyPI release (v0.1.0). All critical issues have been resolved and deployment infrastructure is in place.
+## Adding New AI Providers (for AI Development)
 
-### Major Fixes Completed
-1. **Subprocess Deadlock Fix**: Resolved critical issue where complex queries (like "このプロジェクトの概要を把握して下さい") would hang due to stderr buffer blocking. Fixed by implementing background thread for stderr reading.
+### Implementation Steps
+1. Create new class inheriting from `BaseAI` in `xonai/ai/`
+2. Implement required methods: `process()`, `is_available()`
+3. Add to `AI_PROVIDERS` mapping in `xonai/ai/__init__.py` 
+4. Add comprehensive tests (see tests/README.md for guidelines)
+5. Update documentation in DEVELOPMENT.md
 
-2. **Deployment Configuration**: 
-   - Configured PyPI Trusted Publisher for secure, token-free deployment
-   - Fixed publish.yml to use tag-based triggers
-   - Removed deprecated release.yml workflow
-   - Added Python 3.13 support
+### BaseAI Interface Requirements
+```python
+class BaseAI(ABC):
+    @abstractmethod
+    def process(self, query: str) -> Generator[Response, None, None]:
+        """Process query and yield Response objects"""
+        
+    @abstractmethod
+    def is_available(self) -> bool:
+        """Check if AI provider is available"""
+```
 
-3. **Documentation & Project Management**:
-   - Translated all documentation to English
-   - Created comprehensive GitHub Issues (10 total) for roadmap tracking
-   - Simplified CLAUDE.md by moving detailed TODOs to Issues
-   - Updated README.md with proper title and structure
+## Important Context for AI
 
-4. **Testing Improvements**:
-   - Added tests for complex query scenarios
-   - Added subprocess handling tests with deadlock simulation
-   - Improved test coverage for edge cases
+### Project Status
+xonai v0.1.0 is production-ready. All critical issues resolved:
+- Subprocess deadlock fix (background thread for stderr)
+- PyPI Trusted Publisher deployment
+- Comprehensive test coverage
+- Complete documentation restructure
 
-### Current Release Process
-1. PR #21 contains all release preparations
-2. After merge, create `v0.1.0` tag to trigger automatic PyPI deployment
-3. GitHub Actions will run tests and publish to PyPI using Trusted Publisher
+### Current Branch: `prepare-for-release`
+Main development branch is `main`. Use `main` for PRs unless specifically instructed otherwise.
 
-### Next Steps
-- Merge release preparation PR
-- Create release tag for v0.1.0
-- Monitor deployment and PyPI publication
-- Begin work on planned features (see GitHub Issues)
+### When Making Changes
+1. Always run `make all` after changes
+2. Test thoroughly with both English and Japanese queries
+3. Verify Ctrl-C handling works correctly
+4. Run appropriate tests per tests/README.md guidelines
+5. Update relevant documentation (README.md for users, DEVELOPMENT.md for developers)
+6. Keep this CLAUDE.md updated with any AI-specific instructions
+
+### Documentation Roles
+- **README.md**: User-facing installation and usage guide
+- **DEVELOPMENT.md**: Developer setup, testing, deployment, architecture
+- **CLAUDE.md**: AI assistant instructions and project context (this file)
+
+**Never duplicate content between these files.**
 
 ---
 
-**Note**: This document should be updated regularly to reflect the current state of the project, major changes, and development progress. Always keep this section current with latest status and important updates.
+**This document should be updated whenever AI development context changes.**

@@ -56,48 +56,23 @@ xonai integrates AI assistants into xonsh shell by catching command-not-found er
    pip install -e ".[dev]"
    ```
 
-## Testing Strategy
+## Testing
 
-### Test Categories
+See `tests/README.md` for comprehensive testing documentation including test categories, execution strategies, and debugging procedures.
 
-1. **Unit Tests** (`tests/unit/`)
-   - No external dependencies
-   - Mock Claude CLI interactions
-   - Fast execution
-   - Run in CI/CD environment
-
-2. **Integration Tests** (`tests/integration/`)
-   - Require Claude CLI installation
-   - Test actual AI interactions
-   - Local development only
-   - May take longer to execute
-
-3. **Interactive Tests** (`tests/interactive/`)
-   - Manual and automated user interaction tests
-   - Require human verification in some cases
-
-### Running Tests
+### Quick Start
 
 ```bash
-# Run unit tests only (recommended for development)
+# Development testing (fast)
 python -m pytest tests/unit/ -v
 
-# Run all tests (requires Claude CLI setup)
+# Full testing (requires Claude CLI)
 python -m pytest tests/ -v
 
-# Run with coverage
-python -m pytest tests/unit/ -v --cov=xonai --cov-report=term-missing
-
-# Run specific test categories
-python -m pytest -m "not claude_cli" -v  # Skip Claude CLI tests
-python -m pytest -m "claude_cli" -v      # Only Claude CLI tests
+# Make targets
+make test      # Unit tests only
+make test-cc   # Full test suite including Claude CLI
 ```
-
-### Test Markers
-
-- `@pytest.mark.claude_cli`: Tests requiring Claude CLI
-- `@pytest.mark.integration`: Integration tests (may be slow)
-- `@pytest.mark.slow`: Slow-running tests
 
 ## Code Quality
 
