@@ -59,7 +59,14 @@ create a python script to sort a list
 - **Pipeline Support**: Pipe AI responses to other commands
 - **Parallel Processing**: Run AI queries in background while using shell
 
-For detailed development information, see [DEVELOPMENT.md](DEVELOPMENT.md).
+## Troubleshooting
+
+If you encounter issues:
+1. Ensure Claude Code is installed and logged in: `claude auth status`
+2. Check Python version compatibility (3.9+)
+3. Try restarting the shell after installation
+
+For development documentation, see [DEVELOPMENT.md](DEVELOPMENT.md).
 
 ## License
 

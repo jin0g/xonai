@@ -33,8 +33,9 @@ dependencies = [
     "rich>=13.0.0"
 ]
 
-[project.scripts]
-xonai = "xonai.xonai:main"
+# Scripts are provided as shell scripts in bin/ directory
+# [project.scripts]
+# xonai = "xonai.xonai:main"
 
 [project.entry-points."xonsh.xontribs"]
 xonai = "xonai.xontrib"
@@ -67,6 +68,7 @@ dev = [
 [tool.setuptools]
 packages = ["xonai", "xonai.ai"]
 include-package-data = true
+script-files = ["bin/xonai"]
 
 [tool.setuptools.package-data]
 xonai = ["*.py", "ai/*.py"]

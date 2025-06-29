@@ -34,7 +34,7 @@ class TestResponseFormatter:
         formatter.format(response)
 
         captured = capsys.readouterr()
-        expected = "\n🚀 Claude Code: model=claude-sonnet-4-20250514, id=1234567890abcdef\n"
+        expected = "🚀 Claude Code: model=claude-sonnet-4-20250514, id=1234567890abcdef\n"
         assert captured.out == expected
 
     def test_tool_use_bash(self, capsys):

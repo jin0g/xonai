@@ -4,7 +4,7 @@ import json
 import time
 from unittest.mock import Mock, patch
 
-from xonai.ai.base import ErrorResponse, InitResponse, MessageResponse
+from xonai.ai.base import ErrorResponse, InitResponse, MessageResponse, ToolResultResponse
 from xonai.ai.claude import ClaudeAI
 
 
@@ -143,3 +143,41 @@ class TestSubprocessHandling:
 
         message_responses = [r for r in responses if isinstance(r, MessageResponse)]
         assert any("Hello" in r.content for r in message_responses)
+
+    @patch("xonai.ai.claude.subprocess.Popen")
+    @patch("xonai.ai.claude.shutil.which")
+    def test_tool_result_with_list_content(self, mock_which, mock_popen):
+        """Test that tool results with list content are handled properly."""
+        mock_which.return_value = "/usr/bin/claude"
+
+        # Create mock process
+        mock_proc = Mock()
+        mock_popen.return_value = mock_proc
+
+        # Mock subprocess to return tool result with list content
+        stdout_lines = [
+            json.dumps({"type": "system", "subtype": "init", "model": "test"}),
+            json.dumps(
+                {
+                    "type": "user",
+                    "message": {
+                        "content": [{"type": "tool_result", "content": ["line1", "line2", "line3"]}]
+                    },
+                }
+            ),
+            json.dumps({"type": "result", "usage": {"total_tokens": 10}}),
+        ]
+
+        mock_proc.stdout = iter([line + "\n" for line in stdout_lines])
+        mock_proc.stderr = iter([])
+        mock_proc.wait.return_value = 0
+
+        # Run ClaudeAI
+        ai = ClaudeAI()
+        responses = list(ai("test query"))
+
+        # Check that tool result response has content as string
+        tool_results = [r for r in responses if isinstance(r, ToolResultResponse)]
+        assert len(tool_results) == 1
+        assert isinstance(tool_results[0].content, str)
+        assert tool_results[0].content == "line1\nline2\nline3"
