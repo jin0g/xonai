@@ -8,16 +8,16 @@ xonai integrates AI assistants into xonsh shell by catching command-not-found er
 
 ### Key Components
 
-1. **xonai command** (`xonai/xonai.py`)
-   - Python entry point that launches xonsh with xonai xontrib loaded
-   - Creates temporary xonshrc file for proper xontrib loading
+1. **xonai command** (`xonai/xonai`)
+   - Shell script that launches xonsh with xonai xontrib loaded
+   - Loads user's existing .xonshrc and adds xontrib automatically
 
 2. **xontrib** (`xonai/xontrib.py`)
    - Overrides `SubprocSpec._run_binary` to intercept command execution
    - Uses modular AI system with BaseAI interface
    - Uses `claude --print --output-format stream-json` for real-time output
 
-3. **AI System** (`xonai/ai/`)
+3. **AI System** (`xonai/agents/`)
    - Modular architecture with BaseAI abstract class
    - ClaudeAI implementation using Claude CLI
    - DummyAI for testing
@@ -59,20 +59,6 @@ xonai integrates AI assistants into xonsh shell by catching command-not-found er
 ## Testing
 
 See `tests/README.md` for comprehensive testing documentation including test categories, execution strategies, and debugging procedures.
-
-### Quick Start
-
-```bash
-# Development testing (fast)
-python -m pytest tests/unit/ -v
-
-# Full testing (requires Claude CLI)
-python -m pytest tests/ -v
-
-# Make targets
-make test      # Unit tests only
-make test-cc   # Full test suite including Claude CLI
-```
 
 ## Code Quality
 
@@ -116,17 +102,19 @@ twine check dist/*
 xonai/
 ├── xonai/
 │   ├── __init__.py
-│   ├── xonai.py          # Main entry point
+│   ├── xonai             # Shell script launcher
 │   ├── xontrib.py        # Xonsh integration
+│   ├── handler.py        # Command handling and AI routing
 │   ├── display.py        # Output formatting
-│   └── ai/
+│   └── agents/
 │       ├── __init__.py
 │       ├── base.py       # Abstract AI interface
 │       ├── claude.py     # Claude implementation
 │       └── dummy.py      # Test implementation
-├── tests/
+├── tests/                # See tests/README.md
 ├── pyproject.toml
-└── README.md
+├── README.md
+└── DEVELOPMENT.md
 ```
 
 ## Deployment
@@ -282,28 +270,7 @@ xonai integrates AI assistants into xonsh shell by intercepting command-not-foun
 
 ### Development Commands for AI
 
-#### Essential Commands
-```bash
-# Full development cycle
-make all
-
-# Test basic functionality
-make test
-
-# Test with actual Claude CLI (requires Claude login)
-make test-cc
-
-# Linting and formatting
-make lint
-make format
-```
-
-#### Testing Requirements
-
-See `tests/README.md` for comprehensive testing documentation. Key requirements:
-- Unit tests must pass before any code changes
-- Test both English and Japanese natural language queries
-- Verify Ctrl-C handling and subprocess deadlock prevention
+See `tests/README.md` for comprehensive command reference and testing documentation.
 
 ### Prohibited Actions for AI
 
@@ -320,7 +287,7 @@ See `tests/README.md` for comprehensive testing documentation. Key requirements:
 xonai/
 ├── xonai/
 │   ├── __init__.py         # Package initialization
-│   ├── xonai.py           # Entry point (launches xonsh)
+│   ├── xonai               # Shell script launcher
 │   ├── xontrib.py         # Xonsh integration (command interception)
 │   ├── handler.py         # Command handling and AI routing
 │   ├── display.py         # Terminal output formatting
@@ -330,7 +297,6 @@ xonai/
 │       ├── claude.py      # Claude CLI implementation
 │       └── dummy.py       # Testing implementation
 ├── tests/                 # See tests/README.md for details
-├── xonai/xonai            # Shell script launcher
 ├── pyproject.toml         # Package configuration
 ├── README.md              # User documentation
 └── DEVELOPMENT.md         # This file (developer and AI instructions)
@@ -395,15 +361,13 @@ xonai v0.1.0 is production-ready. All critical issues resolved:
 - Comprehensive test coverage
 - Complete documentation restructure
 
-#### Current Branch: `prepare-for-release`
 Main development branch is `main`. Use `main` for PRs unless specifically instructed otherwise.
 
 #### When Making Changes
-1. Always run `make all` after changes
+1. Follow development workflow in `tests/README.md`
 2. Test thoroughly with both English and Japanese queries
 3. Verify Ctrl-C handling works correctly
-4. Run appropriate tests per tests/README.md guidelines
-5. Update relevant documentation (README.md for users, DEVELOPMENT.md for developers)
+4. Update relevant documentation (README.md for users, DEVELOPMENT.md for developers)
 
 #### Documentation Roles
 - **README.md**: User-facing installation and usage guide

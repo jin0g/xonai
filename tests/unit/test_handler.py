@@ -20,7 +20,7 @@ except ImportError:
 from xonai.agents.base import InitResponse, MessageResponse
 from xonai.handler import (
     create_dummy_process,
-    get_ai_instance,
+    get_agent_instance,
     process_natural_language_query,
     should_skip_command,
     xonai_run_binary_handler,
@@ -30,29 +30,29 @@ from xonai.handler import (
 class TestHandler:
     """Test xonai command handler functions."""
 
-    def test_get_ai_instance_claude(self):
+    def test_get_agent_instance_claude(self):
         """Test getting Claude AI instance."""
         with patch.dict(os.environ, {}, clear=True):
-            ai = get_ai_instance()
-            assert ai.__class__.__name__ == "ClaudeAI"
+            agent = get_agent_instance()
+            assert agent.__class__.__name__ == "ClaudeAI"
 
-    def test_get_ai_instance_dummy(self):
+    def test_get_agent_instance_dummy(self):
         """Test getting DummyAI instance when XONAI_DUMMY=1."""
         with patch.dict(os.environ, {"XONAI_DUMMY": "1"}):
-            ai = get_ai_instance()
-            assert ai.__class__.__name__ == "DummyAI"
+            agent = get_agent_instance()
+            assert agent.__class__.__name__ == "DummyAI"
 
-    @patch("xonai.handler.get_ai_instance")
+    @patch("xonai.handler.get_agent_instance")
     @patch("xonai.handler.ResponseFormatter")
-    def test_process_natural_language_query(self, mock_formatter_class, mock_get_ai):
+    def test_process_natural_language_query(self, mock_formatter_class, mock_get_agent):
         """Test processing natural language query."""
         # Setup mocks
-        mock_ai = Mock()
-        mock_ai.return_value = [
-            InitResponse(content="Test AI"),
+        mock_agent = Mock()
+        mock_agent.return_value = [
+            InitResponse(content="Test Agent"),
             MessageResponse(content="Hello"),
         ]
-        mock_get_ai.return_value = mock_ai
+        mock_get_agent.return_value = mock_agent
 
         mock_formatter = Mock()
         mock_formatter_class.return_value = mock_formatter
@@ -61,7 +61,7 @@ class TestHandler:
         process_natural_language_query("test query")
 
         # Verify
-        mock_ai.assert_called_once_with("test query")
+        mock_agent.assert_called_once_with("test query")
         assert mock_formatter.format.call_count == 2
 
     def test_should_skip_command_empty_args(self):

@@ -42,6 +42,24 @@ python -m pytest tests/unit/ -v
 python -m pytest tests/unit/ -v --cov=xonai --cov-report=term-missing
 ```
 
+#### Essential Commands for Development
+
+```bash
+# Full development cycle
+python -m ruff format xonai/ tests/ && python -m pytest tests/unit/ -v
+
+# Quick unit tests
+python -m pytest tests/unit/ -v
+
+# Full test suite (requires Claude CLI)
+python -m pytest tests/ -v
+
+# Code quality checks
+python -m ruff check xonai/ tests/
+python -m ruff format xonai/ tests/
+python -m mypy xonai/
+```
+
 ### Integration Tests (tests/integration/)
 
 Tests that require Claude CLI installation and test actual AI interactions.
@@ -215,12 +233,12 @@ def test_ctrl_c_handling():
 
 1. **Quick verification:**
    ```bash
-   make test  # Runs unit tests only
+   python -m pytest tests/unit/ -v  # Runs unit tests only
    ```
 
 2. **Full local testing:**
    ```bash
-   make test-cc  # Includes Claude CLI tests if available
+   python -m pytest tests/ -v  # Includes Claude CLI tests if available
    ```
 
 ## Coverage Requirements
