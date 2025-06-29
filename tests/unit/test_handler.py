@@ -7,6 +7,15 @@ from unittest.mock import Mock, patch
 
 import pytest
 
+# Mock xonsh if not available
+try:
+    import xonsh.tools as xt
+except ImportError:
+    # Create mock for test environment
+    class MockXonshError(Exception):
+        pass
+    xt = type("MockXonshTools", (), {"XonshError": MockXonshError})()
+
 from xonai.ai.base import InitResponse, MessageResponse
 from xonai.handler import (
     create_dummy_process,
@@ -145,7 +154,6 @@ class TestHandler:
         self, mock_should_skip, mock_process_query, mock_create_dummy
     ):
         """Test skipping command that should show normal error."""
-        import xonsh.tools as xt
 
         # Setup
         original_method = Mock()
@@ -158,8 +166,9 @@ class TestHandler:
         kwargs = {}
 
         # Test - should re-raise the exception
-        with pytest.raises(xt.XonshError):
-            xonai_run_binary_handler(original_method, subprocess_spec, kwargs)
+        with patch.object(sys.modules["xonai.handler"], "xt", xt, create=True):
+            with pytest.raises(xt.XonshError):
+                xonai_run_binary_handler(original_method, subprocess_spec, kwargs)
 
         # Verify
         mock_should_skip.assert_called_once_with(["ls", "-la"])
@@ -173,7 +182,6 @@ class TestHandler:
         self, mock_should_skip, mock_process_query, mock_create_dummy
     ):
         """Test processing natural language command."""
-        import xonsh.tools as xt
 
         # Setup
         original_method = Mock()
@@ -188,7 +196,8 @@ class TestHandler:
         kwargs = {}
 
         # Test
-        result = xonai_run_binary_handler(original_method, subprocess_spec, kwargs)
+        with patch.object(sys.modules["xonai.handler"], "xt", xt, create=True):
+            result = xonai_run_binary_handler(original_method, subprocess_spec, kwargs)
 
         # Verify
         mock_should_skip.assert_called_once_with(["how", "do", "I", "list", "files"])
@@ -198,7 +207,6 @@ class TestHandler:
 
     def test_xonai_run_binary_handler_other_error(self):
         """Test re-raising non-command-not-found errors."""
-        import xonsh.tools as xt
 
         # Setup
         original_method = Mock()
@@ -207,14 +215,14 @@ class TestHandler:
         kwargs = {}
 
         # Test - should re-raise the exception
-        with pytest.raises(xt.XonshError) as exc_info:
-            xonai_run_binary_handler(original_method, subprocess_spec, kwargs)
+        with patch.object(sys.modules["xonai.handler"], "xt", xt, create=True):
+            with pytest.raises(xt.XonshError) as exc_info:
+                xonai_run_binary_handler(original_method, subprocess_spec, kwargs)
 
         assert "some other error" in str(exc_info.value)
 
     def test_xonai_run_binary_handler_no_args(self):
         """Test handling subprocess_spec without args."""
-        import xonsh.tools as xt
 
         # Setup
         original_method = Mock()
@@ -224,5 +232,6 @@ class TestHandler:
         kwargs = {}
 
         # Test - should re-raise since no args to process
-        with pytest.raises(xt.XonshError):
-            xonai_run_binary_handler(original_method, subprocess_spec, kwargs)
+        with patch.object(sys.modules["xonai.handler"], "xt", xt, create=True):
+            with pytest.raises(xt.XonshError):
+                xonai_run_binary_handler(original_method, subprocess_spec, kwargs)

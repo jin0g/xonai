@@ -63,7 +63,13 @@ def xonai_run_binary_handler(original_method, subprocess_spec, kwargs):
     Returns:
         subprocess.Popen: Either the original process or a dummy success process
     """
-    import xonsh.tools as xt
+    try:
+        import xonsh.tools as xt
+    except ImportError:
+        # Fallback for test environments without xonsh
+        class MockXonshError(Exception):
+            pass
+        xt = type("MockXonshTools", (), {"XonshError": MockXonshError})()
 
     try:
         return original_method(subprocess_spec, kwargs)
