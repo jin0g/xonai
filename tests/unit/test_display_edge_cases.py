@@ -2,7 +2,7 @@
 
 from unittest.mock import patch
 
-from xonai.ai.base import InitResponse, MessageResponse, ToolResultResponse, ToolUseResponse
+from xonai.agents.base import InitResponse, MessageResponse, ToolResultResponse, ToolUseResponse
 from xonai.display import ResponseFormatter
 
 

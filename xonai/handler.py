@@ -9,7 +9,7 @@ import os
 import subprocess
 import sys
 
-from .ai import ClaudeAI, DummyAI
+from .agents import ClaudeAI, DummyAI
 from .display import ResponseFormatter
 
 

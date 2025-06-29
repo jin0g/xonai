@@ -3,14 +3,14 @@
 import json
 from unittest.mock import Mock, patch
 
-from xonai.ai.claude import ClaudeAI
+from xonai.agents.claude import ClaudeAI
 
 
 class TestXonaiDeadlock:
     """Test xonai doesn't deadlock on complex queries."""
 
-    @patch("xonai.ai.claude.subprocess.Popen")
-    @patch("xonai.ai.claude.shutil.which")
+    @patch("xonai.agents.claude.subprocess.Popen")
+    @patch("xonai.agents.claude.shutil.which")
     def test_japanese_project_overview_query(self, mock_which, mock_popen):
         """Test the specific Japanese query that was causing issues."""
         mock_which.return_value = "/usr/bin/claude"
@@ -124,8 +124,8 @@ class TestXonaiDeadlock:
         result_found = any(hasattr(r, "token") for r in responses)
         assert result_found, "Should have result with token count"
 
-    @patch("xonai.ai.claude.subprocess.Popen")
-    @patch("xonai.ai.claude.shutil.which")
+    @patch("xonai.agents.claude.subprocess.Popen")
+    @patch("xonai.agents.claude.shutil.which")
     def test_simulate_actual_deadlock_scenario(self, mock_which, mock_popen):
         """Simulate the exact deadlock scenario with blocking stderr."""
         mock_which.return_value = "/usr/bin/claude"

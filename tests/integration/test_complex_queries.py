@@ -2,8 +2,8 @@
 
 import pytest
 
-from xonai.ai import ClaudeAI
-from xonai.ai.base import ErrorResponse, InitResponse, ResultResponse
+from xonai.agents import ClaudeAI
+from xonai.agents.base import ErrorResponse, InitResponse, ResultResponse
 
 
 @pytest.mark.claude_cli

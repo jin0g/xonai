@@ -3,7 +3,7 @@
 
 from unittest import mock
 
-from xonai.ai.claude import open_claude_docs
+from xonai.agents.claude import open_claude_docs
 
 
 class TestClaudeCheck:

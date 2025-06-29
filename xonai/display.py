@@ -6,7 +6,7 @@ from typing import Optional
 from rich.console import Console
 from rich.text import Text
 
-from .ai import (
+from .agents import (
     ErrorResponse,
     InitResponse,
     MessageResponse,

@@ -3,21 +3,21 @@
 import json
 from unittest.mock import Mock, patch
 
-from xonai.ai.base import (
+from xonai.agents.base import (
     ErrorResponse,
     ErrorType,
     MessageResponse,
     ToolResultResponse,
     ToolUseResponse,
 )
-from xonai.ai.claude import ClaudeAI
+from xonai.agents.claude import ClaudeAI
 
 
 class TestClaudeJSONPatterns:
     """Test various JSON patterns from Claude CLI."""
 
-    @patch("xonai.ai.claude.subprocess.Popen")
-    @patch("xonai.ai.claude.shutil.which")
+    @patch("xonai.agents.claude.subprocess.Popen")
+    @patch("xonai.agents.claude.shutil.which")
     def test_nested_tool_use_content(self, mock_which, mock_popen):
         """Test nested tool_use content patterns."""
         mock_which.return_value = "/usr/bin/claude"
@@ -67,8 +67,8 @@ class TestClaudeJSONPatterns:
         assert tool_uses[0].tool == "Bash"
         assert "ls -la | grep test" in tool_uses[0].content
 
-    @patch("xonai.ai.claude.subprocess.Popen")
-    @patch("xonai.ai.claude.shutil.which")
+    @patch("xonai.agents.claude.subprocess.Popen")
+    @patch("xonai.agents.claude.shutil.which")
     def test_error_not_logged_in(self, mock_which, mock_popen):
         """Test NOT_LOGGED_IN error detection."""
         mock_which.return_value = "/usr/bin/claude"
@@ -86,8 +86,8 @@ class TestClaudeJSONPatterns:
         assert len(errors) == 1
         assert errors[0].error_type == ErrorType.NOT_LOGGED_IN
 
-    @patch("xonai.ai.claude.subprocess.Popen")
-    @patch("xonai.ai.claude.shutil.which")
+    @patch("xonai.agents.claude.subprocess.Popen")
+    @patch("xonai.agents.claude.shutil.which")
     def test_network_error_detection(self, mock_which, mock_popen):
         """Test network error detection."""
         mock_which.return_value = "/usr/bin/claude"
@@ -105,8 +105,8 @@ class TestClaudeJSONPatterns:
         assert len(errors) == 1
         assert errors[0].error_type == ErrorType.NETWORK_ERROR
 
-    @patch("xonai.ai.claude.subprocess.Popen")
-    @patch("xonai.ai.claude.shutil.which")
+    @patch("xonai.agents.claude.subprocess.Popen")
+    @patch("xonai.agents.claude.shutil.which")
     def test_malformed_json_recovery(self, mock_which, mock_popen):
         """Test recovery from malformed JSON."""
         mock_which.return_value = "/usr/bin/claude"
@@ -132,8 +132,8 @@ class TestClaudeJSONPatterns:
         assert len(messages) == 1
         assert "world" in messages[0].content
 
-    @patch("xonai.ai.claude.subprocess.Popen")
-    @patch("xonai.ai.claude.shutil.which")
+    @patch("xonai.agents.claude.subprocess.Popen")
+    @patch("xonai.agents.claude.shutil.which")
     def test_empty_tool_result(self, mock_which, mock_popen):
         """Test empty tool result handling."""
         mock_which.return_value = "/usr/bin/claude"
@@ -159,8 +159,8 @@ class TestClaudeJSONPatterns:
         assert len(tool_results) == 1
         assert tool_results[0].content == ""
 
-    @patch("xonai.ai.claude.subprocess.Popen")
-    @patch("xonai.ai.claude.shutil.which")
+    @patch("xonai.agents.claude.subprocess.Popen")
+    @patch("xonai.agents.claude.shutil.which")
     def test_multiple_tools_sequence(self, mock_which, mock_popen):
         """Test multiple tools in sequence."""
         mock_which.return_value = "/usr/bin/claude"

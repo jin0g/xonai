@@ -4,15 +4,15 @@ import json
 import time
 from unittest.mock import Mock, patch
 
-from xonai.ai.base import ErrorResponse, InitResponse, MessageResponse, ToolResultResponse
-from xonai.ai.claude import ClaudeAI
+from xonai.agents.base import ErrorResponse, InitResponse, MessageResponse, ToolResultResponse
+from xonai.agents.claude import ClaudeAI
 
 
 class TestSubprocessHandling:
     """Test subprocess handling in ClaudeAI."""
 
-    @patch("xonai.ai.claude.subprocess.Popen")
-    @patch("xonai.ai.claude.shutil.which")
+    @patch("xonai.agents.claude.subprocess.Popen")
+    @patch("xonai.agents.claude.shutil.which")
     def test_no_deadlock_with_large_stderr(self, mock_which, mock_popen):
         """Test that large stderr output doesn't cause deadlock."""
         mock_which.return_value = "/usr/bin/claude"
@@ -75,8 +75,8 @@ class TestSubprocessHandling:
         assert len(error_responses) == 1
         assert "Error line" in error_responses[0].content
 
-    @patch("xonai.ai.claude.subprocess.Popen")
-    @patch("xonai.ai.claude.shutil.which")
+    @patch("xonai.agents.claude.subprocess.Popen")
+    @patch("xonai.agents.claude.shutil.which")
     def test_keyboard_interrupt_cleanup(self, mock_which, mock_popen):
         """Test that KeyboardInterrupt properly cleans up threads."""
         mock_which.return_value = "/usr/bin/claude"
@@ -107,8 +107,8 @@ class TestSubprocessHandling:
         assert len(error_responses) == 1
         assert "Interrupted" in error_responses[0].content
 
-    @patch("xonai.ai.claude.subprocess.Popen")
-    @patch("xonai.ai.claude.shutil.which")
+    @patch("xonai.agents.claude.subprocess.Popen")
+    @patch("xonai.agents.claude.shutil.which")
     def test_json_parsing_with_invalid_lines(self, mock_which, mock_popen):
         """Test that invalid JSON lines are skipped without breaking the stream."""
         mock_which.return_value = "/usr/bin/claude"
@@ -144,8 +144,8 @@ class TestSubprocessHandling:
         message_responses = [r for r in responses if isinstance(r, MessageResponse)]
         assert any("Hello" in r.content for r in message_responses)
 
-    @patch("xonai.ai.claude.subprocess.Popen")
-    @patch("xonai.ai.claude.shutil.which")
+    @patch("xonai.agents.claude.subprocess.Popen")
+    @patch("xonai.agents.claude.shutil.which")
     def test_tool_result_with_list_content(self, mock_which, mock_popen):
         """Test that tool results with list content are handled properly."""
         mock_which.return_value = "/usr/bin/claude"
