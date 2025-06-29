@@ -1,4 +1,0 @@
-include README.md
-include LICENSE
-include xonai/xonai
-recursive-include xonai *.py
