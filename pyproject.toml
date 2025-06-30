@@ -66,12 +66,12 @@ dev = [
 ]
 
 [tool.setuptools]
-packages = ["xonai", "xonai.ai"]
+packages = ["xonai", "xonai.agents"]
 include-package-data = true
-script-files = ["bin/xonai"]
+script-files = ["xonai/xonai"]
 
 [tool.setuptools.package-data]
-xonai = ["*.py", "ai/*.py"]
+xonai = ["*.py", "agents/*.py", "xonai"]
 
 [tool.ruff]
 target-version = "py39"

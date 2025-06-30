@@ -8,16 +8,16 @@ xonai integrates AI assistants into xonsh shell by catching command-not-found er
 
 ### Key Components
 
-1. **xonai command** (`xonai/xonai.py`)
-   - Python entry point that launches xonsh with xonai xontrib loaded
-   - Creates temporary xonshrc file for proper xontrib loading
+1. **xonai command** (`xonai/xonai`)
+   - Shell script that launches xonsh with xonai xontrib loaded
+   - Loads user's existing .xonshrc and adds xontrib automatically
 
 2. **xontrib** (`xonai/xontrib.py`)
    - Overrides `SubprocSpec._run_binary` to intercept command execution
    - Uses modular AI system with BaseAI interface
    - Uses `claude --print --output-format stream-json` for real-time output
 
-3. **AI System** (`xonai/ai/`)
+3. **AI System** (`xonai/agents/`)
    - Modular architecture with BaseAI abstract class
    - ClaudeAI implementation using Claude CLI
    - DummyAI for testing
@@ -56,48 +56,9 @@ xonai integrates AI assistants into xonsh shell by catching command-not-found er
    pip install -e ".[dev]"
    ```
 
-## Testing Strategy
+## Testing
 
-### Test Categories
-
-1. **Unit Tests** (`tests/unit/`)
-   - No external dependencies
-   - Mock Claude CLI interactions
-   - Fast execution
-   - Run in CI/CD environment
-
-2. **Integration Tests** (`tests/integration/`)
-   - Require Claude CLI installation
-   - Test actual AI interactions
-   - Local development only
-   - May take longer to execute
-
-3. **Interactive Tests** (`tests/interactive/`)
-   - Manual and automated user interaction tests
-   - Require human verification in some cases
-
-### Running Tests
-
-```bash
-# Run unit tests only (recommended for development)
-python -m pytest tests/unit/ -v
-
-# Run all tests (requires Claude CLI setup)
-python -m pytest tests/ -v
-
-# Run with coverage
-python -m pytest tests/unit/ -v --cov=xonai --cov-report=term-missing
-
-# Run specific test categories
-python -m pytest -m "not claude_cli" -v  # Skip Claude CLI tests
-python -m pytest -m "claude_cli" -v      # Only Claude CLI tests
-```
-
-### Test Markers
-
-- `@pytest.mark.claude_cli`: Tests requiring Claude CLI
-- `@pytest.mark.integration`: Integration tests (may be slow)
-- `@pytest.mark.slow`: Slow-running tests
+See `tests/README.md` for comprehensive testing documentation including test categories, execution strategies, and debugging procedures.
 
 ## Code Quality
 
@@ -141,17 +102,19 @@ twine check dist/*
 xonai/
 ├── xonai/
 │   ├── __init__.py
-│   ├── xonai.py          # Main entry point
+│   ├── xonai             # Shell script launcher
 │   ├── xontrib.py        # Xonsh integration
+│   ├── handler.py        # Command handling and AI routing
 │   ├── display.py        # Output formatting
-│   └── ai/
+│   └── agents/
 │       ├── __init__.py
 │       ├── base.py       # Abstract AI interface
 │       ├── claude.py     # Claude implementation
 │       └── dummy.py      # Test implementation
-├── tests/
+├── tests/                # See tests/README.md
 ├── pyproject.toml
-└── README.md
+├── README.md
+└── DEVELOPMENT.md
 ```
 
 ## Deployment
@@ -244,3 +207,171 @@ refactor: improve code structure
 3. **Transparency**: Let xonsh handle what it does best
 4. **Reliability**: Prefer working with limitations over complex workarounds
 5. **Modularity**: Support multiple AI models through abstract interfaces
+
+## AI Assistant Instructions
+
+This section contains specific instructions for AI assistants working on the xonai project.
+
+### Project Overview
+
+xonai integrates AI assistants into xonsh shell by intercepting command-not-found errors and routing them to AI for natural language interpretation.
+
+### Core Architecture
+
+- **Entry Point**: `xonai/xonai.py` launches xonsh with xontrib loaded
+- **Xontrib**: `xonai/xontrib.py` overrides `SubprocSpec._run_binary` for command interception
+- **AI System**: Modular design in `xonai/agents/` with BaseAI interface
+- **Display**: `xonai/display.py` handles formatted terminal output
+
+### Critical Implementation Details for AI Development
+
+#### Command Interception Strategy
+
+**IMPORTANT**: The core functionality uses `SubprocSpec._run_binary` override approach:
+
+1. Catches `XonshError` with "command not found" message
+2. Routes unrecognized commands to AI instead of showing error
+3. Returns dummy successful process to suppress error display
+4. Preserves normal xonsh command execution
+
+**DO NOT attempt natural language detection** - it's impossible to reliably distinguish between:
+- Natural language queries
+- Valid commands/syntax
+- User-defined variables
+
+#### Signal Handling Requirements
+
+- Use shell script launcher with `exec xonsh` for proper Ctrl-C handling
+- Avoid Python subprocess interference with signal propagation
+- Use `os.system()` over `subprocess.run()` for better terminal state preservation
+
+#### Subprocess Deadlock Prevention
+
+**CRITICAL**: Complex queries can cause deadlock due to stderr buffer blocking.
+**Solution**: Use background thread for stderr reading (already implemented in `handler.py`)
+
+### Development Principles for AI
+
+1. **Simplicity First**: Keep implementation as simple as possible
+2. **Non-intrusive**: Never interfere with normal xonsh operation
+3. **Transparency**: Let xonsh handle what it does best
+4. **Reliability**: Prefer working with limitations over complex workarounds
+5. **Modularity**: Support multiple AI providers through abstract interfaces
+
+### Current Limitations (Do Not Try to "Fix")
+
+1. No session continuity between queries (Claude CLI architectural limitation)
+2. No context awareness (history, environment, cwd not passed to Claude)
+3. Output cannot be captured with subshell syntax `$()`
+4. No pipeline support for natural language queries
+5. Python import usage not supported (xonsh-only design)
+
+**These are intentional design decisions - do not attempt workarounds.**
+
+### Development Commands for AI
+
+See `tests/README.md` for comprehensive command reference and testing documentation.
+
+### Prohibited Actions for AI
+
+- **NEVER** attempt natural language detection patterns
+- **NEVER** modify xonsh event system beyond current approach  
+- **NEVER** create complex workarounds for stated limitations
+- **NEVER** interfere with normal shell command execution
+- **NEVER** commit secrets or API keys
+- **NEVER** create GitHub workflows without explicit instruction
+
+### File Structure for AI Reference
+
+```
+xonai/
+├── xonai/
+│   ├── __init__.py         # Package initialization
+│   ├── xonai               # Shell script launcher
+│   ├── xontrib.py         # Xonsh integration (command interception)
+│   ├── handler.py         # Command handling and AI routing
+│   ├── display.py         # Terminal output formatting
+│   └── agents/
+│       ├── __init__.py    # AI provider registry
+│       ├── base.py        # BaseAI abstract interface
+│       ├── claude.py      # Claude CLI implementation
+│       └── dummy.py       # Testing implementation
+├── tests/                 # See tests/README.md for details
+├── pyproject.toml         # Package configuration
+├── README.md              # User documentation
+└── DEVELOPMENT.md         # This file (developer and AI instructions)
+```
+
+### AI Response Protocol
+
+xonai uses structured Response objects for AI communication:
+
+#### Response Types
+1. **InitResponse**: Session start (`content`: AI name, `session_id`, `model`)
+2. **MessageResponse**: AI text messages (supports streaming)
+3. **ToolUseResponse**: Tool usage notification (`tool`, `content`)
+4. **ToolResultResponse**: Tool execution result
+5. **ErrorResponse**: Error notification (hidden from users)
+6. **ResultResponse**: Session end with statistics
+
+#### Display Rules for AI
+- **InitResponse**: Show after blank line with emoji
+- **MessageResponse**: Stream continuously
+- **ToolUseResponse**: Show concisely with emoji (🔧📖✏️📁🔍📋📝🌐)
+- **ToolResultResponse**: Show indented summary
+- **ErrorResponse**: Hide from user
+- **ResultResponse**: Show statistics after blank line
+
+### Deployment Information for AI
+
+#### PyPI Publishing Process
+1. Update version in `pyproject.toml`
+2. Create version tag: `git tag v0.1.0 && git push origin v0.1.0`
+3. GitHub Actions automatically publishes to PyPI
+
+**DO NOT** manually publish unless explicitly instructed.
+
+### Adding New AI Providers (for AI Development)
+
+#### Implementation Steps
+1. Create new class inheriting from `BaseAI` in `xonai/agents/`
+2. Implement required methods: `process()`, `is_available()`
+3. Add to `AI_PROVIDERS` mapping in `xonai/agents/__init__.py` 
+4. Add comprehensive tests (see tests/README.md for guidelines)
+5. Update documentation in DEVELOPMENT.md
+
+#### BaseAI Interface Requirements
+```python
+class BaseAI(ABC):
+    @abstractmethod
+    def process(self, query: str) -> Generator[Response, None, None]:
+        """Process query and yield Response objects"""
+        
+    @abstractmethod
+    def is_available(self) -> bool:
+        """Check if AI provider is available"""
+```
+
+### Important Context for AI
+
+#### Project Status
+xonai v0.1.0 is production-ready. All critical issues resolved:
+- Subprocess deadlock fix (background thread for stderr)
+- PyPI Trusted Publisher deployment
+- Comprehensive test coverage
+- Complete documentation restructure
+
+Main development branch is `main`. Use `main` for PRs unless specifically instructed otherwise.
+
+#### When Making Changes
+1. Follow development workflow in `tests/README.md`
+2. Test thoroughly with both English and Japanese queries
+3. Verify Ctrl-C handling works correctly
+4. Update relevant documentation (README.md for users, DEVELOPMENT.md for developers)
+
+#### Documentation Roles
+- **README.md**: User-facing installation and usage guide
+- **DEVELOPMENT.md**: Developer setup, testing, deployment, architecture, and AI instructions (this file)
+- **tests/README.md**: Comprehensive testing documentation
+
+**Never duplicate content between these files.**

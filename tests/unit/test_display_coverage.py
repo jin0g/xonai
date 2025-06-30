@@ -2,7 +2,7 @@
 
 import json
 
-from xonai.ai import (
+from xonai.agents import (
     InitResponse,
     MessageResponse,
     ResultResponse,

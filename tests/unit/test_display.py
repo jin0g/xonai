@@ -1,6 +1,6 @@
 """Tests for the display module."""
 
-from xonai.ai import (
+from xonai.agents import (
     ContentType,
     ErrorResponse,
     ErrorType,

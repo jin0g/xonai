@@ -6,7 +6,7 @@ from typing import Optional
 from rich.console import Console
 from rich.text import Text
 
-from .ai import (
+from .agents import (
     ErrorResponse,
     InitResponse,
     MessageResponse,
@@ -78,14 +78,14 @@ class ResponseFormatter:
     def _format_init(self, response: InitResponse) -> str:
         """Format initialization message."""
         # Default content for Claude Code
-        ai_name = response.content or "Claude Code"
+        agent_name = response.content or "Claude Code"
         model = response.model or "unknown"
         session_id = response.session_id or ""
 
         if session_id:
-            return f"🚀 {ai_name}: model={model}, id={session_id}"
+            return f"🚀 {agent_name}: model={model}, id={session_id}"
         else:
-            return f"🚀 {ai_name}: model={model}"
+            return f"🚀 {agent_name}: model={model}"
 
     def _format_tool_use(self, response: ToolUseResponse) -> str:
         """Format tool usage with appropriate emoji."""

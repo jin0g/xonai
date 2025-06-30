@@ -9,11 +9,11 @@ import os
 import subprocess
 import sys
 
-from .ai import ClaudeAI, DummyAI
+from .agents import ClaudeAI, DummyAI
 from .display import ResponseFormatter
 
 
-def get_ai_instance():
+def get_agent_instance():
     """Get appropriate AI instance based on environment."""
     if os.environ.get("XONAI_DUMMY") == "1":
         return DummyAI()
@@ -23,11 +23,11 @@ def get_ai_instance():
 
 def process_natural_language_query(query: str) -> None:
     """Process a natural language query through AI."""
-    ai = get_ai_instance()
+    agent = get_agent_instance()
     formatter = ResponseFormatter()
 
     # Process the query through AI
-    for response in ai(query):
+    for response in agent(query):
         formatter.format(response)
 
 

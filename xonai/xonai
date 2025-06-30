@@ -1,0 +1,16 @@
+#!/bin/sh
+# xonai - Launch xonsh with xonai extension loaded
+
+# Create temporary rc file that loads xontrib and user config
+TEMP_RC=$(mktemp -t xonai-XXXXXX.xsh)
+trap "rm -f $TEMP_RC" EXIT
+
+# Always load xonai xontrib first
+echo "xontrib load xonai" > "$TEMP_RC"
+
+# Source user's .xonairc if it exists
+if [ -f "$HOME/.xonairc" ]; then
+    echo "source ~/.xonairc" >> "$TEMP_RC"
+fi
+
+exec xonsh --rc "$TEMP_RC" "$@"
