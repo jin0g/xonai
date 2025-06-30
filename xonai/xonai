@@ -1,19 +1,16 @@
-#!/bin/sh  
+#!/bin/sh
 # xonai - Launch xonsh with xonai extension loaded
 
-# Set environment variable to indicate xonai mode
-export XONAI_AUTOLOAD=1
+# Create temporary rc file that loads xontrib and user config
+TEMP_RC=$(mktemp -t xonai-XXXXXX.xsh)
+trap "rm -f $TEMP_RC" EXIT
 
-# If .xonairc exists, use it; otherwise create minimal auto-load
+# Always load xonai xontrib first
+echo "xontrib load xonai" > "$TEMP_RC"
+
+# Source user's .xonairc if it exists
 if [ -f "$HOME/.xonairc" ]; then
-    # User has .xonairc - check if it loads xonai xontrib
-    if ! grep -q "xontrib load xonai" "$HOME/.xonairc" 2>/dev/null; then
-        # Add auto-load to the end of existing .xonairc 
-        echo "xontrib load xonai  # Auto-added by xonai launcher" >> "$HOME/.xonairc"
-    fi
-    exec xonsh --rc "$HOME/.xonairc" "$@"
-else
-    # No .xonairc - create a minimal one and use it
-    echo "xontrib load xonai  # Auto-created by xonai launcher" > "$HOME/.xonairc"
-    exec xonsh --rc "$HOME/.xonairc" "$@"
+    echo "source ~/.xonairc" >> "$TEMP_RC"
 fi
+
+exec xonsh --rc "$TEMP_RC" "$@"

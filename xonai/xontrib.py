@@ -11,7 +11,7 @@ def _load_xontrib_(xsh, **kwargs):
     """Load the xontrib."""
     # Ensure this is only loaded once
     if "_xonai_loaded" in xsh.ctx:
-        raise RuntimeError("xonai xontrib is already loaded")
+        return {}  # Already loaded, silently return
 
     # Mark as loaded
     xsh.ctx["_xonai_loaded"] = True
